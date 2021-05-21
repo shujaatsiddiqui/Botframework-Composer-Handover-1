@@ -12,9 +12,15 @@ namespace Microsoft.BotFramework.Composer.Core.Settings
 
         public BlobStorageConfiguration BlobStorage { get; set; }
 
-        public string MicrosoftAppId { get; set; }
+        public string MicrosoftAppId
+        {
+            get { return ""; }
+        }
 
-        public string MicrosoftAppPassword { get; set; }
+        public string MicrosoftAppPassword
+        {
+            get { return ""; }
+        }
 
         public CosmosDbPartitionedStorageOptions CosmosDb { get; set; }
 

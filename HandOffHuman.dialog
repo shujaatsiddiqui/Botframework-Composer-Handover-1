@@ -52,30 +52,10 @@
       },
       "actions": [
         {
-          "$kind": "Microsoft.IfCondition",
+          "$kind": "PostDialog",
           "$designer": {
-            "id": "SmUwRX"
-          },
-          "condition": "=dialog.watching || dialog.connected",
-          "actions": [
-            {
-              "$kind": "PostDialog",
-              "$designer": {
-                "id": "rWerSJ"
-              }
-            }
-          ],
-          "elseActions": [
-            {
-              "$kind": "Microsoft.TraceActivity",
-              "$designer": {
-                "id": "1XAV0P"
-              },
-              "name": "Handover",
-              "label": "Post",
-              "value": "Not watching nor connected"
-            }
-          ]
+            "id": "klck5n"
+          }
         }
       ]
     },
@@ -196,6 +176,21 @@
           "conversationProperty": "=dialog.conversation",
           "userIdProperty": "=dialog.userID",
           "acceptProperty": true
+        },
+        {
+          "$kind": "Microsoft.IfCondition",
+          "$designer": {
+            "id": "aL5y3N"
+          },
+          "condition": "=$response",
+          "actions": [
+            {
+              "$kind": "UnwatchDialog",
+              "$designer": {
+                "id": "XOCtXy"
+              }
+            }
+          ]
         }
       ]
     },
