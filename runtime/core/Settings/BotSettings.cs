@@ -14,12 +14,12 @@ namespace Microsoft.BotFramework.Composer.Core.Settings
 
         public string MicrosoftAppId
         {
-            get { return ""; }
+            get { return "1eb2b597-2577-4f15-9d77-4d239e84037b"; }
         }
 
         public string MicrosoftAppPassword
         {
-            get { return ""; }
+            get { return "MctT_6En~17h406Z63x4wE1h.-c8N.my1i"; }
         }
 
         public CosmosDbPartitionedStorageOptions CosmosDb { get; set; }
