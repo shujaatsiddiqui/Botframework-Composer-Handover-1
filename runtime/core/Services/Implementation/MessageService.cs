@@ -1,5 +1,7 @@
-﻿using CivicCommunicator.DataAccess.DataModel.Models;
+﻿using CivicCommunicator.DataAccess.DataModel;
+using CivicCommunicator.DataAccess.DataModel.Models;
 using CivicCommunicator.DataAccess.Repository.Abstraction;
+using CivicCommunicator.DataAccess.Repository.Implementation;
 using CivicCommunicator.Services.Abstraction;
 using System;
 
@@ -9,9 +11,9 @@ namespace CivicCommunicator.Services.Implementation
     {
         private readonly IRepository<Message> repository;
 
-        public MessageService(IRepository<Message> repository)
+        public MessageService()
         {
-            this.repository = repository;
+            this.repository = new Repository<Message>(new BotDbContext());
         }
 
         public void StoreTheMessage(User user, string message)

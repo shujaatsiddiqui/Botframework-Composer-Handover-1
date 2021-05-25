@@ -12,6 +12,8 @@ using Underscore.Bot.MessageRouting;
 using Underscore.Bot.MessageRouting.Results;
 using Microsoft.Extensions.Logging;
 using Microsoft.BotFramework.Composer.Intermediator;
+using CivicCommunicator.Services.Implementation;
+using Microsoft.BotFramework.Composer.Core;
 
 namespace Microsoft.BotFramework.Composer.CustomAction.Action
 {
@@ -21,11 +23,14 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
         private readonly ILogger<AcceptOrRejectDialog> _logger;
         private readonly MessageRouterResultHandler _messageRouterResultHandler;
         private readonly ConnectionRequestHandler _connectionRequestHandler;
+        private readonly UserService userService;
 
         [JsonConstructor]
         public AcceptOrRejectDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
+
+            this.userService = new UserService();
             // enable instances of this command as debug break point
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
 
@@ -113,6 +118,7 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
             if (ResultProperty != null)
                 dc.State.SetValue(ResultProperty.GetValue(dc.State), success);
 
+            Helper.StoreBotReply(this.userService, replyActivity, dc);
             return await dc.EndDialogAsync(success, cancellationToken);
         }
     }

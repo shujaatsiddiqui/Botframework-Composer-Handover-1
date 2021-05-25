@@ -1,5 +1,7 @@
-﻿using CivicCommunicator.DataAccess.DataModel.Models;
+﻿using CivicCommunicator.DataAccess.DataModel;
+using CivicCommunicator.DataAccess.DataModel.Models;
 using CivicCommunicator.DataAccess.Repository.Abstraction;
+using CivicCommunicator.DataAccess.Repository.Implementation;
 using CivicCommunicator.Services.Abstraction;
 using Microsoft.Bot.Builder;
 using System;
@@ -13,15 +15,15 @@ namespace CivicCommunicator.Services.Implementation
         private static readonly string SITE_DOMAIN_KEY = "siteDomain";
 
 
-        public UserService(IRepository<User> userRepository)
+        public UserService()
         {
-            this.userRepository = userRepository;
+            this.userRepository = new Repository<User>(new BotDbContext());
         }
 
         private string getSiteDomain(ITurnContext context)
         {
             var channelObj = context.Activity?.ChannelData?.ToString();
-            if(channelObj == null)
+            if (channelObj == null)
             {
                 return null;
             }
@@ -30,7 +32,7 @@ namespace CivicCommunicator.Services.Implementation
 
             if (channelData.ContainsKey(UserService.SITE_DOMAIN_KEY))
             {
-               return channelData[UserService.SITE_DOMAIN_KEY].ToString();
+                return channelData[UserService.SITE_DOMAIN_KEY].ToString();
             }
             return null;
         }
@@ -43,6 +45,13 @@ namespace CivicCommunicator.Services.Implementation
         {
             var user = this.GetUserModel(turnContext);
             user.IsAgent = true;
+            this.userRepository.Update(user);
+        }
+
+        public void UnMarkUserAsAgent(ITurnContext turnContext)
+        {
+            var user = this.GetUserModel(turnContext);
+            user.IsAgent = false;
             this.userRepository.Update(user);
         }
 
@@ -68,18 +77,18 @@ namespace CivicCommunicator.Services.Implementation
 
         public User TryUpdate(User user, ITurnContext context)
         {
-            if(user.ConversationId != context.Activity.Conversation.Id)
+            if (user.ConversationId != context.Activity.Conversation.Id)
             {
                 user.ConversationId = context.Activity.Conversation.Id;
             }
-            if(user.BotChannelId != context.Activity.Recipient.Id)
+            if (user.BotChannelId != context.Activity.Recipient.Id)
             {
                 user.BotChannelId = context.Activity.Recipient.Id;
             }
             if (user.ChannelId != "msteams")
             {
                 var domain = this.getSiteDomain(context);
-                if(user.SiteDomain != domain)
+                if (user.SiteDomain != domain)
                 {
                     user.SiteDomain = domain;
                 }

@@ -1,6 +1,9 @@
 ﻿using AdaptiveExpressions.Properties;
+using CivicCommunicator.Services.Abstraction;
+using CivicCommunicator.Services.Implementation;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.BotFramework.Composer.Core;
 using Microsoft.BotFramework.Composer.Intermediator.Resources;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -18,11 +21,13 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
     {
         private readonly MessageRouter _messageRouter;
         private readonly ILogger<WatchDialog> _logger;
+        private readonly IUserService userService;
 
         [JsonConstructor]
         public UnwatchDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
+            this.userService = new UserService();
             // enable instances of this command as debug break point
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
 
@@ -72,7 +77,7 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
                 dc.State.SetValue(ResultProperty.GetValue(dc.State), success);
 
             await dc.Context.SendActivityAsync(replyActivity, cancellationToken);
-
+            Helper.StoreBotReply(this.userService, replyActivity, dc);
             return await dc.EndDialogAsync(success, cancellationToken);
         }
     }

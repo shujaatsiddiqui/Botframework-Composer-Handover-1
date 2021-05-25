@@ -4,11 +4,6 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using CivicCommunicator.DataAccess.DataModel;
-using CivicCommunicator.DataAccess.DataModel.Models;
-using CivicCommunicator.DataAccess.Repository.Abstraction;
-using CivicCommunicator.DataAccess.Repository.Implementation;
-using CivicCommunicator.Services.Abstraction;
 using CivicCommunicator.Services.Implementation;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
@@ -38,7 +33,6 @@ using Microsoft.BotFramework.Composer.Core.Settings;
 using Microsoft.BotFramework.Composer.CustomAction;
 using Microsoft.BotFramework.Composer.Intermediator;
 using Microsoft.BotFramework.Composer.WebAppTemplates.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -95,7 +89,7 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
 
         public void ConfigureHandOff(IServiceCollection services, BotSettings settings)
         {
-            services.AddTransient<IRoutingDataStore>((sp) =>
+            services.AddSingleton<IRoutingDataStore>((sp) =>
             {
                 string connectionString = settings.AzureTableStorageConnectionString ?? string.Empty;
                 IRoutingDataStore routingDataStore = null;
@@ -118,7 +112,7 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
                 return routingDataStore;
             });
 
-            services.AddTransient<MessageRouter>((sp) =>
+            services.AddSingleton<MessageRouter>((sp) =>
             {
                 var loggerFactory = sp.GetService<ILoggerFactory>();
                 var routingDataStore = sp.GetService<IRoutingDataStore>();
@@ -132,7 +126,7 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
                 return messageRouter;
             });
 
-            services.AddTransient<MessageRouterResultHandler>((sp) =>
+            services.AddSingleton<MessageRouterResultHandler>((sp) =>
             {
                 var messageRouter = sp.GetService<MessageRouter>();
                 var loggerFactory = sp.GetService<ILoggerFactory>();
@@ -143,15 +137,11 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
                 return handler;
             });
 
-            //Adding Required Services
-
-            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
-
             services.AddTransient<UserService>((sp) =>
             {
-                var repository = sp.GetService<Repository<User>>();
+                //var repository = sp.GetService<Repository<User>>();
 
-                var handler = new UserService(repository);
+                var handler = new UserService();
                 return handler;
             });
 
@@ -224,11 +214,6 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
             var settings = new BotSettings();
             Configuration.Bind(settings);
 
-            services.AddDbContext<BotDbContext>(
-                options =>
-            options.UseSqlServer(settings.ConnectionString),
-                ServiceLifetime.Scoped);
-
             // Create the credential provider to be used with the Bot Framework Adapter.
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
             services.AddSingleton<BotAdapter>(sp => (BotFrameworkHttpAdapter)sp.GetService<IBotFrameworkHttpAdapter>());
@@ -251,20 +236,22 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
             ComponentRegistration.Add(new CustomActionComponentRegistration());
 
             // Register the skills client and skills request handler.
-            services.AddTransient<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
+            services.AddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
             services.AddHttpClient<BotFrameworkClient, SkillHttpClient>();
-            services.AddTransient<ChannelServiceHandler, SkillHandler>();
+            services.AddSingleton<ChannelServiceHandler, SkillHandler>();
+
+            // Register telemetry client, initializers and middleware
             services.AddApplicationInsightsTelemetry(settings?.ApplicationInsights?.InstrumentationKey ?? string.Empty);
 
-            services.AddTransient<ITelemetryInitializer, OperationCorrelationTelemetryInitializer>();
-            services.AddTransient<ITelemetryInitializer, TelemetryBotIdInitializer>();
-            services.AddTransient<IBotTelemetryClient, BotTelemetryClient>();
-            services.AddTransient<TelemetryLoggerMiddleware>(sp =>
+            services.AddSingleton<ITelemetryInitializer, OperationCorrelationTelemetryInitializer>();
+            services.AddSingleton<ITelemetryInitializer, TelemetryBotIdInitializer>();
+            services.AddSingleton<IBotTelemetryClient, BotTelemetryClient>();
+            services.AddSingleton<TelemetryLoggerMiddleware>(sp =>
             {
                 var telemetryClient = sp.GetService<IBotTelemetryClient>();
                 return new TelemetryLoggerMiddleware(telemetryClient, logPersonalInformation: settings?.Telemetry?.LogPersonalInformation ?? false);
             });
-            services.AddTransient<TelemetryInitializerMiddleware>(sp =>
+            services.AddSingleton<TelemetryInitializerMiddleware>(sp =>
             {
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
                 var telemetryLoggerMiddleware = sp.GetService<TelemetryLoggerMiddleware>();
@@ -279,7 +266,7 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
             services.AddSingleton(userState);
             services.AddSingleton(conversationState);
 
-            //Configure bot loading path
+            // Configure bot loading path
             var botDir = settings.Bot;
             var resourceExplorer = new ResourceExplorer().AddFolder(botDir);
             var defaultLocale = Configuration.GetValue<string>("defaultLanguage") ?? "en-us";
@@ -292,23 +279,10 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
             services.AddSingleton<IBotFrameworkHttpAdapter, BotFrameworkHttpAdapter>(s =>
                 GetBotAdapter(storage, settings, userState, conversationState, s));
 
-            //services.AddTransient<IUserService, UserService>();
-            services.AddTransient<ICommunicationService, CommunicationService>();
-            services.AddTransient<IMessageService, MessageService>();
-
             var removeRecipientMention = settings?.Feature?.RemoveRecipientMention ?? false;
 
-            // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-
-            //services.AddBot<IBot>(s =>
-            //  new ComposerBot(
-            //      s.GetRequiredService<IUserService>(),
-            //      s.GetService<ConversationState>(),
-            //      s.GetService<UserState>(),
-            //      s.GetService<MessageRouter>(),
-            //      s.GetService<MessageRouterResultHandler>()));
-            services.AddBot<IBot>(s =>
-            new ComposerBot(
+            services.AddSingleton<IBot>(s =>
+                new ComposerBot(
                     s.GetService<UserService>(),
                     s.GetService<ConversationState>(),
                     s.GetService<UserState>(),
@@ -321,11 +295,6 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
                     rootDialog,
                     defaultLocale,
                     removeRecipientMention));
-
-            //services.AddBot<ComposerBot>(options =>
-            //{
-            //    //options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
-            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -336,8 +305,7 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-
-            //app.UseNamedPipes(System.Environment.GetEnvironmentVariable("APPSETTING_WEBSITE_SITE_NAME") + ".directline");
+            app.UseNamedPipes(System.Environment.GetEnvironmentVariable("APPSETTING_WEBSITE_SITE_NAME") + ".directline");
             app.UseWebSockets();
             app.UseRouting()
                .UseEndpoints(endpoints =>

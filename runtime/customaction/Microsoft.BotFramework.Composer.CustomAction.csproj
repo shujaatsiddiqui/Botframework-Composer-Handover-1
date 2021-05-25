@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\bot-message-routing\BotMessageRouting.csproj" />
+    <ProjectReference Include="..\core\Microsoft.BotFramework.Composer.Core.csproj" />
     <ProjectReference Include="..\Microsoft.BotFramework.Composer.Intermediator\Microsoft.BotFramework.Composer.Intermediator.csproj" />
   </ItemGroup>
 

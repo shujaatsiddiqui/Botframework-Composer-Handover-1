@@ -13,6 +13,12 @@ using Underscore.Bot.MessageRouting.Results;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.BotFramework.Composer.Intermediator.Resources;
+using CivicCommunicator.Services.Abstraction;
+using CivicCommunicator.DataAccess.Repository.Implementation;
+using CivicCommunicator.DataAccess.DataModel.Models;
+using CivicCommunicator.DataAccess.DataModel;
+using CivicCommunicator.Services.Implementation;
+using Microsoft.BotFramework.Composer.Core;
 
 namespace Microsoft.BotFramework.Composer.CustomAction.Action
 {
@@ -20,11 +26,13 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
     {
         private readonly MessageRouter _messageRouter;
         private readonly ILogger<WatchDialog> _logger;
+        private readonly IUserService userService;
 
         [JsonConstructor]
         public WatchDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
+            this.userService = new UserService();
             // enable instances of this command as debug break point
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
 
@@ -47,6 +55,16 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
+            var user = this.userService.GetUserModel(dc.Context);
+            if (user == null)
+            {
+                user = this.userService.RegisterUser(dc.Context);
+            }
+            else
+            {
+                this.userService.TryUpdate(user, dc.Context);
+            }
+
             Activity replyMessage = null;
             var activity = dc.Context.Activity;
 
@@ -73,6 +91,7 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
             _logger.LogInformation($"{replyMessage.Text} - {activity.From.Id}");
             await dc.Context.SendActivityAsync(replyMessage, cancellationToken);
 
+            Helper.StoreBotReply(this.userService, replyMessage, dc);
 
             if (ResultProperty != null)
                 dc.State.SetValue(ResultProperty.GetValue(dc.State), true);

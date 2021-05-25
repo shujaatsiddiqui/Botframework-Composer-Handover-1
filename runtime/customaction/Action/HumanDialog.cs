@@ -7,6 +7,8 @@ using Underscore.Bot.MessageRouting;
 using AdaptiveExpressions.Properties;
 using Microsoft.BotFramework.Composer.Intermediator;
 using Microsoft.BotFramework.Composer.Intermediator.Resources;
+using Microsoft.BotFramework.Composer.Core;
+using CivicCommunicator.Services.Implementation;
 
 namespace Microsoft.BotFramework.Composer.CustomAction.Action
 {
@@ -14,11 +16,13 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
     {
         private readonly MessageRouter _messageRouter;
         private readonly MessageRouterResultHandler _messageRouterResultHandler;
+        private readonly UserService userService;
 
         [JsonConstructor]
         public HumanDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
            : base()
         {
+            this.userService = new UserService();
             // enable instances of this command as debug break point
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
 
@@ -52,6 +56,7 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
             var replyActivity = activity.CreateReply(Strings.NotifyClientWaitForRequestHandling);
             await dc.Context.SendActivityAsync(replyActivity, cancellationToken);
 
+            Helper.StoreBotReply(this.userService, replyActivity, dc);
             //return EndOfTurn;
             return await dc.EndDialogAsync(messageRouterResult, cancellationToken);
         }

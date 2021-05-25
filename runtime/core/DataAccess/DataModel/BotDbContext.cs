@@ -1,11 +1,24 @@
 ﻿using CivicCommunicator.DataAccess.DataModel.Models;
+using Microsoft.BotFramework.Composer.Core.Settings;
 using Microsoft.EntityFrameworkCore;
 
 namespace CivicCommunicator.DataAccess.DataModel
 {
     public class BotDbContext : DbContext
     {
-        public BotDbContext(DbContextOptions options) : base(options) {}
+        public BotDbContext()
+        {
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer(new BotSettings().ConnectionString);
+            }
+        }
+        public BotDbContext(DbContextOptions options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
 
