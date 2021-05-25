@@ -44,59 +44,59 @@ namespace Microsoft.BotFramework.Composer.Core
         private readonly IMessageService messageService;
         private readonly IRepository<BotReply> replyRepository;
 
-        //public ComposerBot(IUserService userService, IMessageService messageService, ConversationState conversationState,
-        //    UserState userState, ResourceExplorer resourceExplorer,
-        //    BotFrameworkClient skillClient,
-        //    SkillConversationIdFactoryBase conversationIdFactory,
-        //    MessageRouter messageRouter,
-        //    MessageRouterResultHandler messageRouterResultHandler,
-        //    IBotTelemetryClient telemetryClient,
-        //    IRepository<BotReply> replyRepository,
-        //    string rootDialog, string defaultLocale, bool removeRecipientMention = false
-        //  )
-        //{
-        //    this.userService = userService;
-        //    this.messageService = messageService;
-        //    this.conversationState = conversationState;
-        //    this.userState = userState;
-        //    this.dialogState = conversationState.CreateProperty<DialogState>("DialogState");
-        //    this.resourceExplorer = resourceExplorer;
-        //    this.rootDialogFile = rootDialog;
-        //    this.defaultLocale = defaultLocale;
-        //    this.telemetryClient = telemetryClient;
-        //    this.removeRecipientMention = removeRecipientMention;
-        //    this.messageRouter = messageRouter;
-        //    this.messageRouterResultHandler = messageRouterResultHandler;
-        //    this.replyRepository = replyRepository;
-
-        //    LoadRootDialogAsync();
-        //    this.dialogManager.InitialTurnState.Set(skillClient);
-        //    this.dialogManager.InitialTurnState.Set(conversationIdFactory);
-        //}
-
         public ComposerBot(
-            IUserService userService, 
-            ConversationState conversationState, 
-            UserState userState,
-            MessageRouter messageRouter, 
-            MessageRouterResultHandler messageRouterResultHandler)
+            IUserService userService,
+            ConversationState conversationState,
+            UserState userState, ResourceExplorer resourceExplorer,
+            BotFrameworkClient skillClient,
+            SkillConversationIdFactoryBase conversationIdFactory,
+            MessageRouter messageRouter,
+            MessageRouterResultHandler messageRouterResultHandler,
+            IBotTelemetryClient telemetryClient,
+            string rootDialog, string defaultLocale, bool removeRecipientMention = false
+          )
         {
             this.userService = userService;
             this.conversationState = conversationState;
             this.userState = userState;
             this.dialogState = conversationState.CreateProperty<DialogState>("DialogState");
-            //this.resourceExplorer = resourceExplorer;
-            //this.rootDialogFile = rootDialog;
-            //this.defaultLocale = defaultLocale;
-            //this.telemetryClient = telemetryClient;
-            //this.removeRecipientMention = removeRecipientMention;
+            this.resourceExplorer = resourceExplorer;
+            this.rootDialogFile = rootDialog;
+            this.defaultLocale = defaultLocale;
+            this.telemetryClient = telemetryClient;
+            this.removeRecipientMention = removeRecipientMention;
             this.messageRouter = messageRouter;
             this.messageRouterResultHandler = messageRouterResultHandler;
-            //this.replyRepository = replyRepository;
-            //LoadRootDialogAsync();
-            //this.dialogManager.InitialTurnState.Set(skillClient);
-            //this.dialogManager.InitialTurnState.Set(conversationIdFactory);
+            this.replyRepository = replyRepository;
+
+            LoadRootDialogAsync();
+            this.dialogManager.InitialTurnState.Set(skillClient);
+            this.dialogManager.InitialTurnState.Set(conversationIdFactory);
         }
+
+        //public ComposerBot(
+        //    IUserService userService, 
+        //    ConversationState conversationState, 
+        //    UserState userState,
+        //    MessageRouter messageRouter, 
+        //    MessageRouterResultHandler messageRouterResultHandler)
+        //{
+        //    this.userService = userService;
+        //    this.conversationState = conversationState;
+        //    this.userState = userState;
+        //    this.dialogState = conversationState.CreateProperty<DialogState>("DialogState");
+        //    //this.resourceExplorer = resourceExplorer;
+        //    //this.rootDialogFile = rootDialog;
+        //    //this.defaultLocale = defaultLocale;
+        //    //this.telemetryClient = telemetryClient;
+        //    //this.removeRecipientMention = removeRecipientMention;
+        //    this.messageRouter = messageRouter;
+        //    this.messageRouterResultHandler = messageRouterResultHandler;
+        //    //this.replyRepository = replyRepository;
+        //    LoadRootDialogAsync();
+        //    //this.dialogManager.InitialTurnState.Set(skillClient);
+        //    //this.dialogManager.InitialTurnState.Set(conversationIdFactory);
+        //}
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
