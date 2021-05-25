@@ -22,7 +22,20 @@ namespace Microsoft.BotFramework.Composer.Core.Settings
             get { return "MctT_6En~17h406Z63x4wE1h.-c8N.my1i"; }
         }
 
-        public CosmosDbPartitionedStorageOptions CosmosDb { get; set; }
+        public CosmosDbPartitionedStorageOptions CosmosDb
+        {
+            get
+            {
+                return new CosmosDbPartitionedStorageOptions()
+                {
+                    ContainerId = "bot-storage",
+                    AuthKey = "5U0t5D9c1hvfIINyordv90kZFSuK4ZDHS0Aucf2Ixm1IHxUhmnq9VVpfdQ4T3XQJEE1ESBo367UVzt9vgWSBJA==",
+                    CosmosDbEndpoint = "https://chatbotdemocosmosdbbot.documents.azure.com:443/",
+                    DatabaseId = "chatbotdemo",
+                    CompatibilityMode = false
+                };
+            }
+        }
 
         public TelemetryConfiguration ApplicationInsights { get; set; }
 

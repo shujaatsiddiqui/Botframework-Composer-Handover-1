@@ -1,11 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -14,12 +18,22 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.BotFramework.Composer.Core.Settings;
 using Microsoft.BotFramework.Composer.Intermediator;
 using Underscore.Bot.MessageRouting;
 using Underscore.Bot.MessageRouting.Results;
 
 namespace Microsoft.BotFramework.Composer.Core
 {
+    public class UtteranceLog : IStoreItem
+    {
+        // A list of things that users have said to the bot
+        public List<string> UtteranceList { get; } = new List<string>();
+        public DateTime CreationDate { get; set; } = DateTime.Now;
+        // Create concurrency control where this is used.
+        public string ETag { get; set; } = "*";
+    }
+
     public class ComposerBot : ActivityHandler
     {
         private readonly ResourceExplorer resourceExplorer;
@@ -54,6 +68,22 @@ namespace Microsoft.BotFramework.Composer.Core
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
+            var storage = new CosmosDbPartitionedStorage(new BotSettings()?.CosmosDb);
+
+
+            UtteranceLog logItems = null;
+            try
+            {
+                string[] utteranceList = { turnContext.Activity.From.Id };
+                logItems = storage.ReadAsync<UtteranceLog>(utteranceList).Result?.FirstOrDefault().Value;
+            }
+            catch
+            {
+                // Inform the user an error occurred.
+                await turnContext.SendActivityAsync("Sorry, something went wrong reading your stored messages!");
+            }
+
+
             if (this.removeRecipientMention && turnContext?.Activity?.Type == "message")
             {
                 turnContext.Activity.RemoveRecipientMention();
@@ -61,7 +91,23 @@ namespace Microsoft.BotFramework.Composer.Core
 
             messageRouter.StoreConversationReferences(turnContext?.Activity);
 
+            if (turnContext?.Activity?.Type == "message")
+            {
+                var utterance = turnContext.Activity.Text;
+                if (logItems is null)
+                {
+                    // Add the current utterance to a new object.
+                    logItems = new UtteranceLog();
+                }
+                logItems.UtteranceList.Add(utterance);
 
+                var changes = new Dictionary<string, object>();
+                {
+                    changes.Add(turnContext.Activity.From.Id, logItems);
+                };
+
+                await storage.WriteAsync(changes, cancellationToken);
+            }
             await this.dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
             await this.conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
             await this.userState.SaveChangesAsync(turnContext, false, cancellationToken);
