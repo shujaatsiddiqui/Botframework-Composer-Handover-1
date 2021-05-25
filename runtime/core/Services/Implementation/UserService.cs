@@ -62,7 +62,6 @@ namespace CivicCommunicator.Services.Implementation
                 ChatId = turnContext.Activity.From.Id,
                 IsAgent = false,
                 ServiceUrl = turnContext.Activity.ServiceUrl,
-                Name = turnContext.Activity.From.Name,
                 ConversationId = turnContext.Activity.Conversation.Id,
                 ChannelId = turnContext.Activity.ChannelId,
                 BotChannelId = turnContext.Activity.Recipient.Id

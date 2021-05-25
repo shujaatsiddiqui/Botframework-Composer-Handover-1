@@ -9,6 +9,10 @@ using Microsoft.BotFramework.Composer.Intermediator;
 using Microsoft.BotFramework.Composer.Intermediator.Resources;
 using Microsoft.BotFramework.Composer.Core;
 using CivicCommunicator.Services.Implementation;
+using CivicCommunicator.DataAccess.Repository.Implementation;
+using CivicCommunicator.DataAccess.DataModel;
+using CivicCommunicator.DataAccess.DataModel.Models;
+using System;
 
 namespace Microsoft.BotFramework.Composer.CustomAction.Action
 {
@@ -57,6 +61,14 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
             await dc.Context.SendActivityAsync(replyActivity, cancellationToken);
 
             Helper.StoreBotReply(this.userService, replyActivity, dc);
+            var user = this.userService.GetUserModel(dc.Context);
+            //new Repository<ConversationRequest>(new BotDbContext())
+            //    .Add(new ConversationRequest
+            //    {
+            //        CreationDate = DateTime.Now,
+            //        RequesterId = user.UserId,
+            //        Requester = user
+            //    });
             //return EndOfTurn;
             return await dc.EndDialogAsync(messageRouterResult, cancellationToken);
         }

@@ -15,28 +15,22 @@ namespace Microsoft.BotFramework.Composer.Core
         public static void StoreBotReply(IUserService userService, IActivity context, DialogContext dc)
         {
             var user = userService.GetUserModel(dc.Context);
-            if (user == null)
+            if (user != null)
             {
-                user = userService.RegisterUser(dc.Context);
+                var mes = context.AsMessageActivity();
+                if (mes == null)
+                    return;
+
+                if (string.IsNullOrEmpty(mes.Text))
+                    return;
+
+                new Repository<BotReply>(new BotDbContext()).Add(new BotReply
+                {
+                    Text = mes.Text,
+                    CreationDate = DateTime.Now,
+                    ToId = user.UserId
+                });
             }
-            else
-            {
-                userService.TryUpdate(user, dc.Context);
-            }
-
-            var mes = context.AsMessageActivity();
-            if (mes == null)
-                return;
-
-            if (string.IsNullOrEmpty(mes.Text))
-                return;
-
-            new Repository<BotReply>(new BotDbContext()).Add(new BotReply
-            {
-                Text = mes.Text,
-                CreationDate = DateTime.Now,
-                ToId = user.UserId
-            });
         }
     }
 }

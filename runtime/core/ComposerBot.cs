@@ -91,7 +91,10 @@ namespace Microsoft.BotFramework.Composer.Core
                 dialogManager.UseTelemetry(this.telemetryClient);
             }
         }
-
+        protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            await turnContext.SendActivityAsync("Welcome to State Bot Sample. May I have your name?");
+        }
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> context, CancellationToken cancellationToken)
         {
             var user = this.userService.GetUserModel(context);
@@ -104,6 +107,24 @@ namespace Microsoft.BotFramework.Composer.Core
                 this.userService.TryUpdate(user, context);
             }
 
+            if (string.IsNullOrEmpty(user.Name))
+            {
+                // First time around this is set to false, so we will prompt user for name.
+                if (!string.IsNullOrEmpty(context.Activity.Text?.Trim()))
+                {
+                    // Set the name to what the user provided.
+                    user.Name = context.Activity.Text?.Trim();
+
+                    // Acknowledge that we got their name.
+                    await context.SendActivityAsync($"Hi {user.Name}. How may I help you today?");
+                    this.userService.TryUpdate(user, context);
+                }
+                else
+                {
+                    // Prompt the user for their name.
+                    await context.SendActivityAsync($"What is your name?");
+                }
+            }
 
             new MessageService().StoreTheMessage(user, context.Activity.Text);
 
@@ -142,7 +163,7 @@ namespace Microsoft.BotFramework.Composer.Core
             //await context.SendActivityAsync("");
         }
 
-        
+
 
         //protected override async Task OnConversationUpdateActivityAsync
         //    (ITurnContext<IConversationUpdateActivity> turnContext,
