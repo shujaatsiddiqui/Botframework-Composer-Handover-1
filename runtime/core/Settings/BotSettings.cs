@@ -56,5 +56,10 @@ namespace Microsoft.BotFramework.Composer.Core.Settings
 
             public bool FallbackToTextForSpeechIfEmpty { get; set; }
         }
+
+        public string ConnectionString
+        {
+            get { return @"Server=tcp:chatbot-server-demo.database.windows.net,1433;Initial Catalog=chatbotdemo;Persist Security Info=False;User ID=serveradmin;Password=c1v1c@admin;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"; }
+        }
     }
 }

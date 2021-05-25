@@ -13,6 +13,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CivicBot.cs" />
+    <Compile Remove="Services\Implementation\ActionsService.cs" />
+    <Compile Remove="Services\Implementation\CardService.cs" />
+    <Compile Remove="Services\Implementation\CommandHandlingService.cs" />
+    <Compile Remove="Services\Implementation\LuisService.cs" />
+    <Compile Remove="Services\Implementation\OrchestrizationService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder" Version="4.12.0-daily.*" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.12.0-daily.*" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Version="4.12.0-daily.*" />
@@ -26,6 +35,7 @@
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.12.0-daily.*" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.12.0-daily.*" />
     <PackageReference Include="Microsoft.Bot.Connector" Version="4.12.0-daily.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
   </ItemGroup>
 
   <ItemGroup>

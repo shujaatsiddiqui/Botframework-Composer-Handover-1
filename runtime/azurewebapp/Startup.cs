@@ -4,6 +4,12 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using CivicCommunicator.DataAccess.DataModel;
+using CivicCommunicator.DataAccess.DataModel.Models;
+using CivicCommunicator.DataAccess.Repository.Abstraction;
+using CivicCommunicator.DataAccess.Repository.Implementation;
+using CivicCommunicator.Services.Abstraction;
+using CivicCommunicator.Services.Implementation;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,6 +38,7 @@ using Microsoft.BotFramework.Composer.Core.Settings;
 using Microsoft.BotFramework.Composer.CustomAction;
 using Microsoft.BotFramework.Composer.Intermediator;
 using Microsoft.BotFramework.Composer.WebAppTemplates.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -205,6 +212,11 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
             var settings = new BotSettings();
             Configuration.Bind(settings);
 
+            services.AddDbContext<BotDbContext>(
+                options =>
+            options.UseSqlServer(settings.ConnectionString),
+                ServiceLifetime.Scoped);
+
             // Create the credential provider to be used with the Bot Framework Adapter.
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
             services.AddSingleton<BotAdapter>(sp => (BotFrameworkHttpAdapter)sp.GetService<IBotFrameworkHttpAdapter>());
@@ -230,8 +242,6 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
             services.AddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
             services.AddHttpClient<BotFrameworkClient, SkillHttpClient>();
             services.AddSingleton<ChannelServiceHandler, SkillHandler>();
-
-            // Register telemetry client, initializers and middleware
             services.AddApplicationInsightsTelemetry(settings?.ApplicationInsights?.InstrumentationKey ?? string.Empty);
 
             services.AddSingleton<ITelemetryInitializer, OperationCorrelationTelemetryInitializer>();
@@ -248,7 +258,6 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
                 var telemetryLoggerMiddleware = sp.GetService<TelemetryLoggerMiddleware>();
                 return new TelemetryInitializerMiddleware(httpContextAccessor, telemetryLoggerMiddleware, settings?.Telemetry?.LogActivities ?? false);
             });
-
             var storage = ConfigureStorage(settings);
 
             services.AddSingleton(storage);
@@ -257,7 +266,7 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
             services.AddSingleton(userState);
             services.AddSingleton(conversationState);
 
-            // Configure bot loading path
+            //Configure bot loading path
             var botDir = settings.Bot;
             var resourceExplorer = new ResourceExplorer().AddFolder(botDir);
             var defaultLocale = Configuration.GetValue<string>("defaultLanguage") ?? "en-us";
@@ -272,19 +281,27 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
 
             var removeRecipientMention = settings?.Feature?.RemoveRecipientMention ?? false;
 
-            services.AddSingleton<IBot>(s =>
-                new ComposerBot(
-                    s.GetService<ConversationState>(),
-                    s.GetService<UserState>(),
-                    s.GetService<ResourceExplorer>(),
-                    s.GetService<BotFrameworkClient>(),
-                    s.GetService<SkillConversationIdFactoryBase>(),
-                    s.GetService<MessageRouter>(),
-                    s.GetService<MessageRouterResultHandler>(),
-                    s.GetService<IBotTelemetryClient>(),
-                    rootDialog,
-                    defaultLocale,
-                    removeRecipientMention));
+            //Adding Required Services
+
+            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<ICommunicationService, CommunicationService>();
+            services.AddTransient<IMessageService, MessageService>();
+
+            // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
+
+            services.AddBot<IBot>(s =>
+              new ComposerBot(
+                  s.GetRequiredService<IUserService>(),
+                  s.GetService<ConversationState>(),
+                  s.GetService<UserState>(),
+                  s.GetService<MessageRouter>(),
+                  s.GetService<MessageRouterResultHandler>()));
+
+            //services.AddBot<ComposerBot>(options =>
+            //{
+            //    options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -297,6 +314,7 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
             app.UseStaticFiles();
             app.UseNamedPipes(System.Environment.GetEnvironmentVariable("APPSETTING_WEBSITE_SITE_NAME") + ".directline");
             app.UseWebSockets();
+            app.UseMiddleware<BotDbContext>();
             app.UseRouting()
                .UseEndpoints(endpoints =>
                {

@@ -277,7 +277,7 @@ namespace Microsoft.BotFramework.Composer.Intermediator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Requested by user &quot;{0}&quot; on channel &quot;{1}&quot;.
+        ///   Looks up a localized string similar to New Request Received from &quot;{0}&quot;.
         /// </summary>
         public static string RequestorDetailsTitle {
             get {

@@ -190,6 +190,6 @@
     <value>Reject</value>
   </data>
   <data name="RequestorDetailsTitle" xml:space="preserve">
-    <value>Requested by user "{0}" on channel "{1}"</value>
+    <value>New Request Received from "{0}"</value>
   </data>
 </root>

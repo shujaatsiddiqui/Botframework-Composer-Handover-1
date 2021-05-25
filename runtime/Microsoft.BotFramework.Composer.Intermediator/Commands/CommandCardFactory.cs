@@ -43,8 +43,8 @@ namespace Microsoft.BotFramework.Composer.Intermediator
             HeroCard card = new HeroCard()
             {
                 Title = Strings.ConnectionRequestTitle,
-                Subtitle = string.Format(Strings.RequestorDetailsTitle, requestorChannelAccountName, requestorChannelId),
-                Text = string.Format(Strings.AcceptRejectConnectionHint, acceptValue, rejectValue),
+                Subtitle = string.Format(Strings.RequestorDetailsTitle, requestorChannelAccountName),
+                // Text = string.Format(Strings.AcceptRejectConnectionHint, acceptValue, rejectValue),
 
                 Buttons = new List<CardAction>()
                 {
