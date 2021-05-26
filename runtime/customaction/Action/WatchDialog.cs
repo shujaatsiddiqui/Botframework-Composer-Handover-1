@@ -13,12 +13,9 @@ using Underscore.Bot.MessageRouting.Results;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.BotFramework.Composer.Intermediator.Resources;
-using CivicCommunicator.Services.Abstraction;
-using CivicCommunicator.DataAccess.Repository.Implementation;
-using CivicCommunicator.DataAccess.DataModel.Models;
-using CivicCommunicator.DataAccess.DataModel;
-using CivicCommunicator.Services.Implementation;
 using Microsoft.BotFramework.Composer.Core;
+using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
+using Microsoft.BotFramework.Composer.DAL.Implementation;
 
 namespace Microsoft.BotFramework.Composer.CustomAction.Action
 {

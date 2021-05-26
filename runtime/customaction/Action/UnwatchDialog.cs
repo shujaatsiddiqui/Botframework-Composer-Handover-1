@@ -1,9 +1,9 @@
 ﻿using AdaptiveExpressions.Properties;
-using CivicCommunicator.Services.Abstraction;
-using CivicCommunicator.Services.Implementation;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.BotFramework.Composer.Core;
+using Microsoft.BotFramework.Composer.DAL.Implementation;
+using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
 using Microsoft.BotFramework.Composer.Intermediator.Resources;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;

@@ -19,6 +19,7 @@ namespace Microsoft.BotFramework.Composer.Intermediator
         public static HeroCard CreateConnectionRequestCard(
             ConnectionRequest connectionRequest, string botName = null)
         {
+            
             if (connectionRequest == null || connectionRequest.Requestor == null)
             {
                 throw new ArgumentNullException("The connection request or the conversation reference of the requestor is null");

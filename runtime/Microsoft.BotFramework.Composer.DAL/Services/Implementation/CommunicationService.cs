@@ -1,13 +1,13 @@
-﻿using CivicCommunicator.DataAccess.DataModel.Models;
-using CivicCommunicator.Services.Abstraction;
-using Microsoft.Bot.Connector;
+﻿using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
+using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 
-namespace CivicCommunicator.Services.Implementation
+namespace Microsoft.BotFramework.Composer.DAL.Implementation
 {
     public class CommunicationService : ICommunicationService
     {

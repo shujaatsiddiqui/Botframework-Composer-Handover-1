@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Services\Abstraction\IActionsService.cs" />
+    <Compile Remove="Services\Abstraction\ICardService.cs" />
+    <Compile Remove="Services\Abstraction\ILuisService.cs" />
+    <Compile Remove="Services\Abstraction\IOrchestrizationService.cs" />
+    <Compile Remove="Services\Implementation\ActionsService.cs" />
+    <Compile Remove="Services\Implementation\CardService.cs" />
+    <Compile Remove="Services\Implementation\CommandHandlingService.cs" />
+    <Compile Remove="Services\Implementation\LuisService.cs" />
+    <Compile Remove="Services\Implementation\OrchestrizationService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Bot.Builder" Version="4.12.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.6" />
+  </ItemGroup>
+
+</Project>

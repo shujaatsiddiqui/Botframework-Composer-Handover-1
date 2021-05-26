@@ -17,6 +17,9 @@
     <CodeAnalysisRuleSet>..\core\Microsoft.BotFramework.Composer.Core.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="appsettings.json" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.2" />
     <PackageReference Include="Microsoft.Bot.Builder" Version="4.12.0-daily.*" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.12.0-daily.*" />
@@ -42,5 +45,6 @@
     <ProjectReference Include="..\bot-message-routing\BotMessageRouting.csproj" />
     <ProjectReference Include="..\core\Microsoft.BotFramework.Composer.Core.csproj" />
     <ProjectReference Include="..\customaction\Microsoft.BotFramework.Composer.CustomAction.csproj" />
+    <ProjectReference Include="..\Microsoft.BotFramework.Composer.DAL\Microsoft.BotFramework.Composer.DAL.csproj" />
   </ItemGroup>
 </Project>

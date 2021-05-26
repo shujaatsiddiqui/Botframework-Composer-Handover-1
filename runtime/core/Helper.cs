@@ -1,9 +1,9 @@
-﻿using CivicCommunicator.DataAccess.DataModel;
-using CivicCommunicator.DataAccess.DataModel.Models;
-using CivicCommunicator.DataAccess.Repository.Implementation;
-using CivicCommunicator.Services.Abstraction;
-using Microsoft.Bot.Builder.Dialogs;
+﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Implementation;
+using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
 using System;
 using System.Collections.Generic;
 using System.Text;

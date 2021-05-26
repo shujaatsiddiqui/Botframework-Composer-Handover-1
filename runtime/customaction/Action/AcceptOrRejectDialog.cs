@@ -12,8 +12,8 @@ using Underscore.Bot.MessageRouting;
 using Underscore.Bot.MessageRouting.Results;
 using Microsoft.Extensions.Logging;
 using Microsoft.BotFramework.Composer.Intermediator;
-using CivicCommunicator.Services.Implementation;
 using Microsoft.BotFramework.Composer.Core;
+using Microsoft.BotFramework.Composer.DAL.Implementation;
 
 namespace Microsoft.BotFramework.Composer.CustomAction.Action
 {

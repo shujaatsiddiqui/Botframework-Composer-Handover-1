@@ -1,4 +1,4 @@
-﻿namespace CivicCommunicator.DataAccess.DataModel.Models
+﻿namespace Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models
 {
     public enum RequestState
     {

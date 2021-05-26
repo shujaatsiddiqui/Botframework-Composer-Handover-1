@@ -2,7 +2,7 @@
 using Microsoft.Bot.Schema;
 using System.Threading;
 
-namespace CivicCommunicator.Services.Abstraction
+namespace Microsoft.BotFramework.Composer.DAL.Services.Abstraction
 {
     public interface ICommandHandlingService
     {

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CivicCommunicator.DataAccess.DataModel.Models
+namespace Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models
 {
     public class User
     {

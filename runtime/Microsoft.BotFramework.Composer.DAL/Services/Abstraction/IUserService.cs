@@ -1,7 +1,7 @@
-﻿using CivicCommunicator.DataAccess.DataModel.Models;
-using Microsoft.Bot.Builder;
+﻿using Microsoft.Bot.Builder;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
 
-namespace CivicCommunicator.Services.Abstraction
+namespace Microsoft.BotFramework.Composer.DAL.Services.Abstraction
 {
     public interface IUserService
     {

@@ -7,11 +7,6 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
-using CivicCommunicator.DataAccess.DataModel;
-using CivicCommunicator.DataAccess.DataModel.Models;
-using CivicCommunicator.DataAccess.Repository.Implementation;
-using CivicCommunicator.Services.Abstraction;
-using CivicCommunicator.Services.Implementation;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
@@ -21,6 +16,9 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
+using Microsoft.BotFramework.Composer.DAL.Implementation;
+using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
 using Microsoft.BotFramework.Composer.Intermediator;
 using Underscore.Bot.MessageRouting;
 using Underscore.Bot.MessageRouting.Results;
@@ -63,18 +61,84 @@ namespace Microsoft.BotFramework.Composer.Core
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
+            var user = this.userService.GetUserModel(turnContext);
+            if (user == null)
+            {
+                user = this.userService.RegisterUser(turnContext);
+            }
+            else
+            {
+                this.userService.TryUpdate(user, turnContext);
+            }
+
+            var conversationStateAccessors = conversationState.CreateProperty<ConversationFlow>(nameof(ConversationFlow));
+            var flow = await conversationStateAccessors.GetAsync(turnContext, () => new ConversationFlow(), cancellationToken);
+
+            var userStateAccessors = userState.CreateProperty<UserProfile>(nameof(UserProfile));
+            var profile = await userStateAccessors.GetAsync(turnContext, () => new UserProfile(), cancellationToken);
+
             if (this.removeRecipientMention && turnContext?.Activity?.Type == "message")
             {
                 turnContext.Activity.RemoveRecipientMention();
             }
 
             messageRouter.StoreConversationReferences(turnContext?.Activity);
-
+            await FillOutUserProfileAsync(user, flow, profile, turnContext, cancellationToken);
 
             await this.dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
-            await base.OnTurnAsync(turnContext, cancellationToken);
+            //await base.OnTurnAsync(turnContext, cancellationToken);
             await this.conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
             await this.userState.SaveChangesAsync(turnContext, false, cancellationToken);
+            if (turnContext.Activity.Type == "Message")
+                new MessageService().StoreTheMessage(user, turnContext.Activity.Text);
+        }
+
+        private async Task FillOutUserProfileAsync(User userObj, ConversationFlow flow, UserProfile profile, ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+
+            var input = turnContext.Activity.Text?.Trim();
+            string message;
+
+            switch (flow.LastQuestionAsked)
+            {
+                case ConversationFlow.Question.Start:
+                    await turnContext.SendActivityAsync("Hi my name is BOT. I am here for your assistance. May I have your name?", null, null, cancellationToken);
+                    flow.LastQuestionAsked = ConversationFlow.Question.Name;
+                    break;
+                case ConversationFlow.Question.Name:
+                    if (ValidateName(input, out var name, out message))
+                    {
+                        profile.Name = name;
+                        userObj.Name = name;
+                        await turnContext.SendActivityAsync($"Hi {profile.Name}. How may I help you today?", null, null, cancellationToken);
+
+                        this.userService.TryUpdate(userObj, turnContext);
+                        flow.LastQuestionAsked = ConversationFlow.Question.Stop;
+                        break;
+                    }
+                    else
+                    {
+                        await turnContext.SendActivityAsync(message ?? "I'm sorry, I didn't understand that.", null, null, cancellationToken);
+                        break;
+                    }
+            }
+        }
+
+        private static bool ValidateName(string input, out string name, out string message)
+        {
+            name = null;
+            message = null;
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                message = "Please enter a name that contains at least one character.";
+            }
+            else
+            {
+                name = input.Trim();
+            }
+
+            return message is null;
         }
 
         private void LoadRootDialogAsync()
@@ -93,7 +157,7 @@ namespace Microsoft.BotFramework.Composer.Core
         }
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
-            await turnContext.SendActivityAsync("Welcome to State Bot Sample. May I have your name?");
+            //await turnContext.SendActivityAsync("Welcome to State Bot Sample. May I have your name?");
         }
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> context, CancellationToken cancellationToken)
         {
@@ -107,24 +171,24 @@ namespace Microsoft.BotFramework.Composer.Core
                 this.userService.TryUpdate(user, context);
             }
 
-            if (string.IsNullOrEmpty(user.Name))
-            {
-                // First time around this is set to false, so we will prompt user for name.
-                if (!string.IsNullOrEmpty(context.Activity.Text?.Trim()))
-                {
-                    // Set the name to what the user provided.
-                    user.Name = context.Activity.Text?.Trim();
+            //if (string.IsNullOrEmpty(user.Name))
+            //{
+            //    // First time around this is set to false, so we will prompt user for name.
+            //    if (!string.IsNullOrEmpty(context.Activity.Text?.Trim()))
+            //    {
+            //        // Set the name to what the user provided.
+            //        user.Name = context.Activity.Text?.Trim();
 
-                    // Acknowledge that we got their name.
-                    await context.SendActivityAsync($"Hi {user.Name}. How may I help you today?");
-                    this.userService.TryUpdate(user, context);
-                }
-                else
-                {
-                    // Prompt the user for their name.
-                    await context.SendActivityAsync($"What is your name?");
-                }
-            }
+            //        // Acknowledge that we got their name.
+            //        await context.SendActivityAsync($"Hi {user.Name}. How may I help you today?");
+            //        this.userService.TryUpdate(user, context);
+            //    }
+            //    else
+            //    {
+            //        // Prompt the user for their name.
+            //        await context.SendActivityAsync($"What is your name?");
+            //    }
+            //}
 
             new MessageService().StoreTheMessage(user, context.Activity.Text);
 

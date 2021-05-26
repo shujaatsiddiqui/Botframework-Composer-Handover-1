@@ -8,11 +8,8 @@ using AdaptiveExpressions.Properties;
 using Microsoft.BotFramework.Composer.Intermediator;
 using Microsoft.BotFramework.Composer.Intermediator.Resources;
 using Microsoft.BotFramework.Composer.Core;
-using CivicCommunicator.Services.Implementation;
-using CivicCommunicator.DataAccess.Repository.Implementation;
-using CivicCommunicator.DataAccess.DataModel;
-using CivicCommunicator.DataAccess.DataModel.Models;
 using System;
+using Microsoft.BotFramework.Composer.DAL.Implementation;
 
 namespace Microsoft.BotFramework.Composer.CustomAction.Action
 {

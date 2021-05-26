@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using CivicCommunicator.Services.Implementation;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,6 +30,7 @@ using Microsoft.BotFramework.Composer.Core;
 using Microsoft.BotFramework.Composer.Core.Settings;
 
 using Microsoft.BotFramework.Composer.CustomAction;
+using Microsoft.BotFramework.Composer.DAL.Implementation;
 using Microsoft.BotFramework.Composer.Intermediator;
 using Microsoft.BotFramework.Composer.WebAppTemplates.Authorization;
 using Microsoft.Extensions.Configuration;

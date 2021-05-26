@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CivicCommunicator.DataAccess.Repository.Abstraction
+namespace Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Abstraction
 {
     public interface IRepository<TEntity> where TEntity : class
     {

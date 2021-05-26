@@ -1,11 +1,11 @@
-﻿using CivicCommunicator.DataAccess.DataModel;
-using CivicCommunicator.DataAccess.DataModel.Models;
-using CivicCommunicator.DataAccess.Repository.Abstraction;
-using CivicCommunicator.DataAccess.Repository.Implementation;
-using CivicCommunicator.Services.Abstraction;
+﻿using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Abstraction;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Implementation;
+using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
 using System;
 
-namespace CivicCommunicator.Services.Implementation
+namespace Microsoft.BotFramework.Composer.DAL.Implementation
 {
     public class MessageService : IMessageService
     {

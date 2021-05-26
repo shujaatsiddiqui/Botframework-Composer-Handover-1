@@ -1,8 +1,8 @@
-﻿using CivicCommunicator.DataAccess.DataModel.Models;
-using Microsoft.Bot.Schema;
+﻿using Microsoft.Bot.Schema;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
 using System.Collections.Generic;
 
-namespace CivicCommunicator.Services.Abstraction
+namespace Microsoft.BotFramework.Composer.DAL.Services.Abstraction
 {
     public interface ICommunicationService
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CivicCommunicator.DataAccess.DataModel.Models
+namespace Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models
 {
     public class BotReply
     {

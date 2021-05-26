@@ -1,13 +1,16 @@
-﻿using CivicCommunicator.DataAccess.DataModel.Models;
-using Microsoft.BotFramework.Composer.Core.Settings;
+﻿using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
-namespace CivicCommunicator.DataAccess.DataModel
+namespace Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel
 {
     public class BotDbContext : DbContext
     {
+        private readonly string connectionString;
+
         public BotDbContext()
         {
+            this.connectionString = connectionString;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -15,7 +18,7 @@ namespace CivicCommunicator.DataAccess.DataModel
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer(new BotSettings().ConnectionString);
+                optionsBuilder.UseSqlServer(@"Server=tcp:chatbot-server-demo.database.windows.net,1433;Initial Catalog=chatbotdemo;Persist Security Info=False;User ID=serveradmin;Password=c1v1c@admin;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
         public BotDbContext(DbContextOptions options) : base(options) { }

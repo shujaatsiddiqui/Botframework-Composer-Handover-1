@@ -1,10 +1,10 @@
-﻿using CivicCommunicator.DataAccess.DataModel;
-using CivicCommunicator.DataAccess.Repository.Abstraction;
+﻿using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CivicCommunicator.DataAccess.Repository.Implementation
+namespace Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Implementation
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
