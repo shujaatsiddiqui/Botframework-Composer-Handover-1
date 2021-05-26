@@ -199,10 +199,10 @@ namespace Microsoft.BotFramework.Composer.Intermediator
                                 string.Format(Strings.NotifyOwnerDisconnected,
                                     userProfile2?.Name));
 
-                            await _messageRouter.SendMessageAsync(
-                                connection.ConversationReference1,
-                                messageActivity
-                                );
+                            //await _messageRouter.SendMessageAsync(
+                            //    connection.ConversationReference1,
+                            //    messageActivity
+                            //    );
                         }
 
                         if (connection.ConversationReference2 != null)
@@ -212,10 +212,10 @@ namespace Microsoft.BotFramework.Composer.Intermediator
                                 string.Format(Strings.NotifyClientDisconnected,
                                     userProfile1?.Name));
 
-                            await _messageRouter.SendMessageAsync(
-                                connection.ConversationReference2,
-                                messageActivity
-                                );
+                            //await _messageRouter.SendMessageAsync(
+                            //    connection.ConversationReference2,
+                            //    messageActivity
+                            //    );
 
                         }
                     }
