@@ -6,6 +6,9 @@ namespace Microsoft.BotFramework.Composer.DAL.Services.Abstraction
     public interface IUserService
     {
         User GetUserModel(ITurnContext turnContext);
+
+        User GetUserModelFromChatId(string chatId);
+
         User TryUpdate(User user, ITurnContext context);
         User GetUserModel(int id);
         User RegisterUser(ITurnContext turnContext);

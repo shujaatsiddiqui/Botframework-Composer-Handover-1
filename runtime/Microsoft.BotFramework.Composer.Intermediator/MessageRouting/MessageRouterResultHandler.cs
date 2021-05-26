@@ -1,4 +1,6 @@
 ﻿using Microsoft.Bot.Schema;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
+using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
 using Microsoft.BotFramework.Composer.Intermediator.Resources;
 using Microsoft.Extensions.Logging;
 using System;
@@ -25,18 +27,18 @@ namespace Microsoft.BotFramework.Composer.Intermediator
             _logger = logger;
         }
 
-        public virtual async Task<IActivity> HandleResultAsync(AbstractMessageRouterResult messageRouterResult)
+        public virtual async Task<IActivity> HandleResultAsync(AbstractMessageRouterResult messageRouterResult, User userProfile = null, IUserService userService = null)
         {
             if (messageRouterResult != null)
             {
                 if (messageRouterResult is ConnectionRequestResult)
                 {
-                    return await HandleConnectionRequestResultAsync(messageRouterResult as ConnectionRequestResult);
+                    return await HandleConnectionRequestResultAsync(messageRouterResult as ConnectionRequestResult, userProfile);
                 }
 
                 if (messageRouterResult is ConnectionResult)
                 {
-                    await HandleConnectionResultAsync(messageRouterResult as ConnectionResult);
+                    await HandleConnectionResultAsync(messageRouterResult as ConnectionResult, userService);
                     return null;
                 }
 
@@ -56,7 +58,7 @@ namespace Microsoft.BotFramework.Composer.Intermediator
         /// <param name="connectionRequestResult">The result to handle.</param>
         /// <returns>True, if the result was handled. False, if no action was taken.</returns>
         protected virtual async Task<IActivity> HandleConnectionRequestResultAsync(
-            ConnectionRequestResult connectionRequestResult)
+            ConnectionRequestResult connectionRequestResult, User userProfile = null)
         {
             ConnectionRequest connectionRequest = connectionRequestResult?.ConnectionRequest;
 
@@ -87,7 +89,7 @@ namespace Microsoft.BotFramework.Composer.Intermediator
                                 CommandCardFactory.CreateConnectionRequestCard(
                                     connectionRequest,
                                     RoutingDataManager.GetChannelAccount(
-                                        botConversationReference)?.Name).ToAttachment()
+                                        botConversationReference)?.Name,userProfile).ToAttachment()
                             };
 
                             await _messageRouter.SendMessageAsync(aggregationChannel, messageActivity);
@@ -143,10 +145,23 @@ namespace Microsoft.BotFramework.Composer.Intermediator
         /// </summary>
         /// <param name="connectionResult">The result to handle.</param>
         /// <returns>True, if the result was handled. False, if no action was taken.</returns>
-        protected virtual async Task<(bool,IActivity)> HandleConnectionResultAsync(ConnectionResult connectionResult)
+        protected virtual async Task<(bool, IActivity)> HandleConnectionResultAsync(ConnectionResult connectionResult, IUserService userService = null)
         {
             IMessageActivity messageActivity = Activity.CreateMessageActivity();
             Connection connection = connectionResult.Connection;
+
+            User userProfile1 = null;
+            User userProfile2 = null;
+            if (connection?.ConversationReference1 != null)
+            {
+                userProfile1 = userService.GetUserModelFromChatId(
+                                 connection.ConversationReference1.User.Id);
+            }
+            if (connection?.ConversationReference2 != null)
+            {
+                userProfile2 = userService.GetUserModelFromChatId(
+                               connection.ConversationReference2.User.Id);
+            }
 
             switch (connectionResult.Type)
             {
@@ -158,7 +173,7 @@ namespace Microsoft.BotFramework.Composer.Intermediator
                             await _messageRouter.SendMessageAsync(
                                 connection.ConversationReference1,
                                 string.Format(Strings.NotifyOwnerConnected,
-                                    GetNameOrId(connection.ConversationReference2)));
+                                    userProfile2?.Name));
                         }
 
                         if (connection.ConversationReference2 != null)
@@ -166,7 +181,7 @@ namespace Microsoft.BotFramework.Composer.Intermediator
                             await _messageRouter.SendMessageAsync(
                                 connection.ConversationReference2,
                                 string.Format(Strings.NotifyAgentConnected,
-                                    GetNameOrId(connection.ConversationReference1)));
+                                    userProfile1?.Name));
                         }
                     }
 
@@ -182,7 +197,7 @@ namespace Microsoft.BotFramework.Composer.Intermediator
                             await _messageRouter.SendMessageAsync(
                                 connection.ConversationReference1,
                                 string.Format(Strings.NotifyOwnerDisconnected,
-                                    GetNameOrId(connection.ConversationReference2)));
+                                    userProfile2?.Name));
 
                             await _messageRouter.SendMessageAsync(
                                 connection.ConversationReference1,
@@ -195,8 +210,7 @@ namespace Microsoft.BotFramework.Composer.Intermediator
                             await _messageRouter.SendMessageAsync(
                                 connection.ConversationReference2,
                                 string.Format(Strings.NotifyClientDisconnected,
-                                    GetNameOrId(connection.ConversationReference1)));
-
+                                    userProfile1?.Name));
 
                             await _messageRouter.SendMessageAsync(
                                 connection.ConversationReference2,

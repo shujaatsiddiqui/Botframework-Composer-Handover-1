@@ -59,6 +59,7 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
+
             var activity = dc.Context.Activity;
             bool success = false;
 
@@ -103,7 +104,7 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
                             _messageRouter, _messageRouterResultHandler, sender, accept,
                             requestorChannelAccount, requestorConversationAccount);
 
-                    await _messageRouterResultHandler.HandleResultAsync(messageRouterResult);
+                    await _messageRouterResultHandler.HandleResultAsync(messageRouterResult,userService:userService);
                     success = true;
                 }
                 else

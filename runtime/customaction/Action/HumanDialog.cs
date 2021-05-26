@@ -47,18 +47,18 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
+            var user = this.userService.GetUserModel(dc.Context);
             var activity = dc.Context.Activity;
 
             var messageRouterResult = _messageRouter.CreateConnectionRequest(
                 MessageRouter.CreateSenderConversationReference(activity));
 
-            await _messageRouterResultHandler.HandleResultAsync(messageRouterResult);
+            await _messageRouterResultHandler.HandleResultAsync(messageRouterResult, user, userService: userService);
 
             var replyActivity = activity.CreateReply(Strings.NotifyClientWaitForRequestHandling);
             await dc.Context.SendActivityAsync(replyActivity, cancellationToken);
 
             Helper.StoreBotReply(this.userService, replyActivity, dc);
-            var user = this.userService.GetUserModel(dc.Context);
             //new Repository<ConversationRequest>(new BotDbContext())
             //    .Add(new ConversationRequest
             //    {

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Microsoft.BotFramework.Composer.Core
+namespace Microsoft.BotFramework.Composer.DAL
 {
     public class ConversationFlow
     {

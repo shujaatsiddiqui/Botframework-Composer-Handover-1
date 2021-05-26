@@ -41,6 +41,8 @@ namespace Microsoft.BotFramework.Composer.DAL.Implementation
 
         public User GetUserModel(int id) => this.userRepository.Get(id);
 
+        public User GetUserModelFromChatId(string chatId) => this.userRepository.AsQueryable().FirstOrDefault(x => x.ChatId == chatId);
+
         public void MarkUserAsAgent(ITurnContext turnContext)
         {
             var user = this.GetUserModel(turnContext);

@@ -425,7 +425,7 @@ namespace Underscore.Bot.MessageRouting
 
                         if (!string.IsNullOrWhiteSpace(senderName))
                         {
-                            message = $"{senderName}: {message}";
+                            message = $"{message}";
                         }
                     }
 

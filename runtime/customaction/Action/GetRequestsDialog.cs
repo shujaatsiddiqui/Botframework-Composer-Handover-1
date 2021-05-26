@@ -1,6 +1,7 @@
 ﻿using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.BotFramework.Composer.DAL.Implementation;
 using Microsoft.BotFramework.Composer.Intermediator;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -19,11 +20,13 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
     {
         private readonly MessageRouter _messageRouter;
         private readonly ILogger<GetRequestsDialog> _logger;
+        private readonly UserService userService;
 
         [JsonConstructor]
         public GetRequestsDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
+            this.userService = new UserService();
             // enable instances of this command as debug break point
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
 
@@ -61,7 +64,7 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
             else
             {
                 replyActivity.Attachments = CommandCardFactory.CreateMultipleConnectionRequestCards(
-                    connectionRequests, activity.Recipient?.Name);
+                    connectionRequests, userService, activity.Recipient?.Name);
             }
 
             replyActivity.ChannelData = JsonConvert.SerializeObject(connectionRequests);

@@ -16,6 +16,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.BotFramework.Composer.DAL;
 using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
 using Microsoft.BotFramework.Composer.DAL.Implementation;
 using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;

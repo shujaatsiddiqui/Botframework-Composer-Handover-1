@@ -1,6 +1,7 @@
 ﻿using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.BotFramework.Composer.DAL.Implementation;
 using Microsoft.BotFramework.Composer.Intermediator;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -18,11 +19,13 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
         private readonly MessageRouter _messageRouter;
         private readonly MessageRouterResultHandler _messageRouterResultHandler;
         private readonly ILogger<DisconnectDialog> _logger;
+        private UserService userService;
 
         [JsonConstructor]
         public DisconnectDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
+            this.userService = new UserService();
             // enable instances of this command as debug break point
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
 
@@ -56,7 +59,7 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
             {
                 foreach (ConnectionResult disconnectResult in disconnectResults)
                 {
-                    await _messageRouterResultHandler.HandleResultAsync(disconnectResult);
+                    await _messageRouterResultHandler.HandleResultAsync(disconnectResult, userService: userService);
                 }
             }
 

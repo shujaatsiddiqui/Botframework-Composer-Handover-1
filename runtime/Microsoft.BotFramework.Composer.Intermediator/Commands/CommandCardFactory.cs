@@ -1,4 +1,6 @@
 ﻿using Microsoft.Bot.Schema;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
+using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
 using Microsoft.BotFramework.Composer.Intermediator.Resources;
 using System;
 using System.Collections.Generic;
@@ -17,9 +19,9 @@ namespace Microsoft.BotFramework.Composer.Intermediator
         /// <param name="botName">The name of the bot (optional).</param>
         /// <returns>A newly created request card.</returns>
         public static HeroCard CreateConnectionRequestCard(
-            ConnectionRequest connectionRequest, string botName = null)
+            ConnectionRequest connectionRequest, string botName = null, User userProfile = null)
         {
-            
+
             if (connectionRequest == null || connectionRequest.Requestor == null)
             {
                 throw new ArgumentNullException("The connection request or the conversation reference of the requestor is null");
@@ -44,7 +46,7 @@ namespace Microsoft.BotFramework.Composer.Intermediator
             HeroCard card = new HeroCard()
             {
                 Title = Strings.ConnectionRequestTitle,
-                Subtitle = string.Format(Strings.RequestorDetailsTitle, requestorChannelAccountName),
+                Subtitle = string.Format(Strings.RequestorDetailsTitle, userProfile?.Name),
                 // Text = string.Format(Strings.AcceptRejectConnectionHint, acceptValue, rejectValue),
 
                 Buttons = new List<CardAction>()
@@ -74,13 +76,14 @@ namespace Microsoft.BotFramework.Composer.Intermediator
         /// <param name="botName">The name of the bot (optional).</param>
         /// <returns>A list of request cards as attachments.</returns>
         public static IList<Attachment> CreateMultipleConnectionRequestCards(
-            IList<ConnectionRequest> connectionRequests, string botName = null)
+            IList<ConnectionRequest> connectionRequests, IUserService userService, string botName = null)
         {
             IList<Attachment> attachments = new List<Attachment>();
 
             foreach (ConnectionRequest connectionRequest in connectionRequests)
             {
-                attachments.Add(CreateConnectionRequestCard(connectionRequest, botName).ToAttachment());
+                var user = userService.GetUserModelFromChatId(connectionRequest.Requestor.User.Id);
+                attachments.Add(CreateConnectionRequestCard(connectionRequest, botName, user).ToAttachment());
             }
 
             return attachments;

@@ -213,6 +213,7 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
             // Load settings
             var settings = new BotSettings();
             Configuration.Bind(settings);
+            Microsoft.BotFramework.Composer.DAL.DALConfiguration.ConnectionString = settings.ConnectionString;
 
             // Create the credential provider to be used with the Bot Framework Adapter.
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
