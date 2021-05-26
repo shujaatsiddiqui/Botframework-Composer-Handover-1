@@ -1,10 +1,14 @@
 ﻿using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Implementation;
 using Microsoft.BotFramework.Composer.DAL.Implementation;
 using Microsoft.BotFramework.Composer.Intermediator;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -60,7 +64,22 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
                 foreach (ConnectionResult disconnectResult in disconnectResults)
                 {
                     await _messageRouterResultHandler.HandleResultAsync(disconnectResult, userService: userService);
+
+                    User userAgent = userService.GetUserModelFromChatId(disconnectResult.Connection.ConversationReference1.User.Id);
+                    User userCustomer = userService.GetUserModelFromChatId(disconnectResult.Connection.ConversationReference2.User.Id);
+
+                    new Repository<ConversationRequest>(new BotDbContext())
+                            .Add(new ConversationRequest
+                            {
+                                CreationDate = DateTime.Now,
+                                RequesterId = (int)userCustomer?.UserId,
+                                AgentId = (int)userAgent?.UserId,
+                                State = RequestState.Finished
+                            });
                 }
+
+
+
             }
 
             return await dc.EndDialogAsync(null, cancellationToken);

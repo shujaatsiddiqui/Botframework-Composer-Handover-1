@@ -14,6 +14,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.BotFramework.Composer.Intermediator;
 using Microsoft.BotFramework.Composer.Core;
 using Microsoft.BotFramework.Composer.DAL.Implementation;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Implementation;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel;
 
 namespace Microsoft.BotFramework.Composer.CustomAction.Action
 {
@@ -64,10 +67,12 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
             bool success = false;
 
             var conversation = ConversationProperty.GetValue(dc.State);
+            // requestor id
             var userId = UserProperty.GetValue(dc.State);
             var accept = AcceptProperty.GetValue(dc.State);
 
             Activity replyActivity = null;
+            // sender conversation reference
             ConversationReference sender = MessageRouter.CreateSenderConversationReference(activity);
 
             if (_messageRouter.RoutingDataManager.IsAssociatedWithAggregation(sender))
@@ -104,7 +109,18 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
                             _messageRouter, _messageRouterResultHandler, sender, accept,
                             requestorChannelAccount, requestorConversationAccount);
 
-                    await _messageRouterResultHandler.HandleResultAsync(messageRouterResult,userService:userService);
+                    User userCustomer = userService.GetUserModelFromChatId(requestorChannelAccount.Id);
+                    User userAgent = userService.GetUserModelFromChatId(sender.User.Id);
+
+                    new Repository<ConversationRequest>(new BotDbContext())
+                        .Add(new ConversationRequest
+                        {
+                            CreationDate = DateTime.Now,
+                            RequesterId = (int)userCustomer?.UserId,
+                            AgentId = (int)userAgent?.UserId,
+                            State = RequestState.InProgress
+                        });
+                    await _messageRouterResultHandler.HandleResultAsync(messageRouterResult, userService: userService);
                     success = true;
                 }
                 else

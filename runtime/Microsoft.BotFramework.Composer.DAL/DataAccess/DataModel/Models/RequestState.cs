@@ -5,6 +5,7 @@
         Pending,
         WaitingForAgentReponse,
         InProgress,
-        Finished
+        Finished,
+        None
     }
 }

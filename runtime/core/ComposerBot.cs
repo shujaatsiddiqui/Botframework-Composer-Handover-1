@@ -90,7 +90,7 @@ namespace Microsoft.BotFramework.Composer.Core
             //await base.OnTurnAsync(turnContext, cancellationToken);
             await this.conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
             await this.userState.SaveChangesAsync(turnContext, false, cancellationToken);
-            if (turnContext.Activity.Type == "Message")
+            if (turnContext.Activity.Type.Equals("Message", StringComparison.InvariantCultureIgnoreCase))
                 new MessageService().StoreTheMessage(user, turnContext.Activity.Text);
         }
 
