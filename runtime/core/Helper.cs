@@ -15,7 +15,7 @@ namespace Microsoft.BotFramework.Composer.Core
         public static void StoreBotReply(IUserService userService, IActivity context, DialogContext dc)
         {
             var user = userService.GetUserModel(dc.Context);
-            if (user != null)
+            if (user != null && context != null)
             {
                 var mes = context.AsMessageActivity();
                 if (mes == null)
