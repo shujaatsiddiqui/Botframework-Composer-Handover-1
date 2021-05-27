@@ -7,11 +7,14 @@
   <ItemGroup>
     <Compile Remove="Services\Abstraction\IActionsService.cs" />
     <Compile Remove="Services\Abstraction\ICardService.cs" />
+    <Compile Remove="Services\Abstraction\ICommandHandlingService.cs" />
+    <Compile Remove="Services\Abstraction\ICommunicationService.cs" />
     <Compile Remove="Services\Abstraction\ILuisService.cs" />
     <Compile Remove="Services\Abstraction\IOrchestrizationService.cs" />
     <Compile Remove="Services\Implementation\ActionsService.cs" />
     <Compile Remove="Services\Implementation\CardService.cs" />
     <Compile Remove="Services\Implementation\CommandHandlingService.cs" />
+    <Compile Remove="Services\Implementation\CommunicationService.cs" />
     <Compile Remove="Services\Implementation\LuisService.cs" />
     <Compile Remove="Services\Implementation\OrchestrizationService.cs" />
   </ItemGroup>

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
@@ -16,11 +17,14 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.BotFramework.Composer.Core.Settings;
 using Microsoft.BotFramework.Composer.DAL;
 using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Abstraction;
 using Microsoft.BotFramework.Composer.DAL.Implementation;
 using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
 using Microsoft.BotFramework.Composer.Intermediator;
+using Microsoft.Extensions.Configuration;
 using Underscore.Bot.MessageRouting;
 using Underscore.Bot.MessageRouting.Results;
 
@@ -32,6 +36,8 @@ namespace Microsoft.BotFramework.Composer.Core
         private readonly UserState userState;
         private DialogManager dialogManager;
         private readonly IUserService userService;
+        private readonly IMessageService messageService;
+        private readonly IRepository<BotReply> repoBotReply;
         private readonly ConversationState conversationState;
         private readonly IStatePropertyAccessor<DialogState> dialogState;
         private readonly string rootDialogFile;
@@ -41,17 +47,28 @@ namespace Microsoft.BotFramework.Composer.Core
         private readonly MessageRouter messageRouter;
         private readonly MessageRouterResultHandler messageRouterResultHandler;
 
-        public ComposerBot(IUserService userService, ConversationState conversationState, UserState userState, ResourceExplorer resourceExplorer, BotFrameworkClient skillClient, SkillConversationIdFactoryBase conversationIdFactory, MessageRouter messageRouter, MessageRouterResultHandler messageRouterResultHandler, IBotTelemetryClient telemetryClient, string rootDialog, string defaultLocale, bool removeRecipientMention = false)
+        public ComposerBot(IConfiguration configuration,
+            IMessageService messageService,
+            IRepository<BotReply> repoBotReply,
+            IUserService userService, ConversationState conversationState, UserState userState, ResourceExplorer resourceExplorer, BotFrameworkClient skillClient, SkillConversationIdFactoryBase conversationIdFactory, MessageRouter messageRouter, MessageRouterResultHandler messageRouterResultHandler, IBotTelemetryClient telemetryClient)
         {
+            //// Configure bot loading path
+            var settings = new BotSettings();
+            configuration.Bind(settings);
+            var botDir = settings.Bot;
+            defaultLocale = "en-us";
+            var rootDialog = GetRootDialog(botDir);
+
             this.userService = userService;
+            this.messageService = messageService;
+            this.repoBotReply = repoBotReply;
             this.conversationState = conversationState;
             this.userState = userState;
             this.dialogState = conversationState.CreateProperty<DialogState>("DialogState");
             this.resourceExplorer = resourceExplorer;
             this.rootDialogFile = rootDialog;
-            this.defaultLocale = defaultLocale;
             this.telemetryClient = telemetryClient;
-            this.removeRecipientMention = removeRecipientMention;
+            this.removeRecipientMention = false;
             this.messageRouter = messageRouter;
             this.messageRouterResultHandler = messageRouterResultHandler;
 
@@ -91,7 +108,7 @@ namespace Microsoft.BotFramework.Composer.Core
             await this.conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
             await this.userState.SaveChangesAsync(turnContext, false, cancellationToken);
             if (turnContext.Activity.Type.Equals("Message", StringComparison.InvariantCultureIgnoreCase))
-                new MessageService().StoreTheMessage(user, turnContext.Activity.Text);
+                messageService.StoreTheMessage(user, turnContext.Activity.Text);
         }
 
         private async Task FillOutUserProfileAsync(User userObj, ConversationFlow flow, UserProfile profile, ITurnContext turnContext, CancellationToken cancellationToken)
@@ -191,7 +208,7 @@ namespace Microsoft.BotFramework.Composer.Core
             //    }
             //}
 
-            new MessageService().StoreTheMessage(user, context.Activity.Text);
+            this.messageService.StoreTheMessage(user, context.Activity.Text);
 
             //var aboutCivic = this.actionsService.HandleAction(context);
             //if (aboutCivic != null)
@@ -254,5 +271,19 @@ namespace Microsoft.BotFramework.Composer.Core
         //    replyActivity.Attachments = new List<Attachment>() { this.cardService.CreateAdaptiveCardAttachment() };
         //    await turnContext.SendActivityAsync(replyActivity);
         //}
+
+        private string GetRootDialog(string folderPath)
+        {
+            var dir = new DirectoryInfo(folderPath);
+            foreach (var f in dir.GetFiles())
+            {
+                if (f.Extension == ".dialog")
+                {
+                    return f.Name;
+                }
+            }
+
+            throw new Exception($"Can't locate root dialog in {dir.FullName}");
+        }
     }
 }

@@ -329,6 +329,21 @@
                 "id": "dMpKzq"
               },
               "resultProperty": "$result"
+            },
+            {
+              "$kind": "Microsoft.IfCondition",
+              "$designer": {
+                "id": "I1IQkw"
+              },
+              "condition": "=$response",
+              "actions": [
+                {
+                  "$kind": "WatchDialog",
+                  "$designer": {
+                    "id": "hft5dC"
+                  }
+                }
+              ]
             }
           ]
         }
