@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using Bot.Builder.Community.Storage.EntityFramework;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -148,25 +149,27 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
 
         public IStorage ConfigureStorage(BotSettings settings)
         {
-            if (string.IsNullOrEmpty(settings?.CosmosDb?.ContainerId))
-            {
-                if (!string.IsNullOrEmpty(this.Configuration["cosmosdb:collectionId"]))
-                {
-                    settings.CosmosDb.ContainerId = this.Configuration["cosmosdb:collectionId"];
-                }
-            }
+            return new EntityFrameworkStorage(settings.ConnectionString);
 
-            IStorage storage;
-            if (ConfigSectionValid(settings?.CosmosDb?.AuthKey))
-            {
-                storage = new CosmosDbPartitionedStorage(settings?.CosmosDb);
-            }
-            else
-            {
-                storage = new MemoryStorage();
-            }
+            //if (string.IsNullOrEmpty(settings?.CosmosDb?.ContainerId))
+            //{
+            //    if (!string.IsNullOrEmpty(this.Configuration["cosmosdb:collectionId"]))
+            //    {
+            //        settings.CosmosDb.ContainerId = this.Configuration["cosmosdb:collectionId"];
+            //    }
+            //}
 
-            return storage;
+            //IStorage storage;
+            //if (ConfigSectionValid(settings?.CosmosDb?.AuthKey))
+            //{
+            //    storage = new CosmosDbPartitionedStorage(settings?.CosmosDb);
+            //}
+            //else
+            //{
+            //    storage = new MemoryStorage();
+            //}
+
+            //return storage;
         }
 
         public bool IsSkill(BotSettings settings)
@@ -293,7 +296,7 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
             //services.AddSingleton<IBot, ComposerBot>();
             services.AddTransient<IBot, ComposerBot>();
 
-            services.AddTransient<Dialog, WatchDialog>(); 
+            services.AddTransient<Dialog, WatchDialog>();
 
             //services.AddSingleton<IBot>(s =>
             //    new ComposerBot(

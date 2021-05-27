@@ -62,81 +62,89 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-
-            var activity = dc.Context.Activity;
-            bool success = false;
-
-            var conversation = ConversationProperty.GetValue(dc.State);
-            // requestor id
-            var userId = UserProperty.GetValue(dc.State);
-            var accept = AcceptProperty.GetValue(dc.State);
-
-            Activity replyActivity = null;
-            // sender conversation reference
-            ConversationReference sender = MessageRouter.CreateSenderConversationReference(activity);
-
-            if (_messageRouter.RoutingDataManager.IsAssociatedWithAggregation(sender))
+            try
             {
-                // The sender is associated with the aggregation and has the right to accept/reject
-                if (string.IsNullOrEmpty(conversation) && string.IsNullOrEmpty(userId))
+
+                var activity = dc.Context.Activity;
+                bool success = false;
+
+                var conversation = ConversationProperty.GetValue(dc.State);
+                // requestor id
+                var userId = UserProperty.GetValue(dc.State);
+                var accept = AcceptProperty.GetValue(dc.State);
+
+                Activity replyActivity = null;
+                // sender conversation reference
+                ConversationReference sender = MessageRouter.CreateSenderConversationReference(activity);
+
+                if (_messageRouter.RoutingDataManager.IsAssociatedWithAggregation(sender))
                 {
-                    replyActivity = activity.CreateReply();
-
-                    var connectionRequests = _messageRouter.RoutingDataManager.GetConnectionRequests();
-
-                    if (connectionRequests.Count == 0)
+                    // The sender is associated with the aggregation and has the right to accept/reject
+                    if (string.IsNullOrEmpty(conversation) && string.IsNullOrEmpty(userId))
                     {
-                        replyActivity.Text = "Strings.NoPendingRequests";
+                        replyActivity = activity.CreateReply();
+
+                        var connectionRequests = _messageRouter.RoutingDataManager.GetConnectionRequests();
+
+                        if (connectionRequests.Count == 0)
+                        {
+                            replyActivity.Text = "Strings.NoPendingRequests";
+                        }
+                        else
+                        {
+                            //replyActivity = CommandCardFactory.AddCardToActivity(
+                            //    replyActivity, CommandCardFactory.CreateMultiConnectionRequestCard(
+                            //        connectionRequests, doAccept, activity.Recipient?.Name));
+                        }
+                    }
+                    else if (!string.IsNullOrEmpty(conversation) || !string.IsNullOrEmpty(userId))
+                    {
+                        // Try to accept the specified connection request
+                        ChannelAccount requestorChannelAccount =
+                            new ChannelAccount(userId);
+                        ConversationAccount requestorConversationAccount =
+                            new ConversationAccount(null, null, conversation);
+
+                        _logger.LogDebug($"Accepting user {userId} @ {conversation}");
+                        AbstractMessageRouterResult messageRouterResult =
+                            await _connectionRequestHandler.AcceptOrRejectRequestAsync(
+                                _messageRouter, _messageRouterResultHandler, sender, accept,
+                                requestorChannelAccount, requestorConversationAccount);
+
+                        User userCustomer = userService.GetUserModelFromChatId(requestorChannelAccount.Id);
+                        User userAgent = userService.GetUserModelFromChatId(sender.User.Id);
+
+                        new Repository<ConversationRequest>(new BotDbContext())
+                            .Add(new ConversationRequest
+                            {
+                                CreationDate = DateTime.Now,
+                                RequesterId = (int)userCustomer?.UserId,
+                                AgentId = (int)userAgent?.UserId,
+                                State = RequestState.InProgress
+                            });
+                        await _messageRouterResultHandler.HandleResultAsync(messageRouterResult, userService: userService);
+                        success = true;
                     }
                     else
                     {
-                        //replyActivity = CommandCardFactory.AddCardToActivity(
-                        //    replyActivity, CommandCardFactory.CreateMultiConnectionRequestCard(
-                        //        connectionRequests, doAccept, activity.Recipient?.Name));
+                        replyActivity = activity.CreateReply(Intermediator.Resources.Strings.InvalidOrMissingCommandParameter);
                     }
                 }
-                else if (!string.IsNullOrEmpty(conversation) || !string.IsNullOrEmpty(userId))
-                {
-                    // Try to accept the specified connection request
-                    ChannelAccount requestorChannelAccount =
-                        new ChannelAccount(userId);
-                    ConversationAccount requestorConversationAccount =
-                        new ConversationAccount(null, null, conversation);
 
-                    _logger.LogDebug($"Accepting user {userId} @ {conversation}");
-                    AbstractMessageRouterResult messageRouterResult =
-                        await _connectionRequestHandler.AcceptOrRejectRequestAsync(
-                            _messageRouter, _messageRouterResultHandler, sender, accept,
-                            requestorChannelAccount, requestorConversationAccount);
+                if (!success)
+                    await dc.Context.SendActivityAsync(replyActivity, cancellationToken);
 
-                    User userCustomer = userService.GetUserModelFromChatId(requestorChannelAccount.Id);
-                    User userAgent = userService.GetUserModelFromChatId(sender.User.Id);
+                if (ResultProperty != null)
+                    dc.State.SetValue(ResultProperty.GetValue(dc.State), success);
 
-                    new Repository<ConversationRequest>(new BotDbContext())
-                        .Add(new ConversationRequest
-                        {
-                            CreationDate = DateTime.Now,
-                            RequesterId = (int)userCustomer?.UserId,
-                            AgentId = (int)userAgent?.UserId,
-                            State = RequestState.InProgress
-                        });
-                    await _messageRouterResultHandler.HandleResultAsync(messageRouterResult, userService: userService);
-                    success = true;
-                }
-                else
-                {
-                    replyActivity = activity.CreateReply(Intermediator.Resources.Strings.InvalidOrMissingCommandParameter);
-                }
+                Helper.StoreBotReply(this.userService, replyActivity, dc);
+                return await dc.EndDialogAsync(success, cancellationToken);
             }
-
-            if (!success)
-                await dc.Context.SendActivityAsync(replyActivity, cancellationToken);
-
-            if (ResultProperty != null)
-                dc.State.SetValue(ResultProperty.GetValue(dc.State), success);
-
-            Helper.StoreBotReply(this.userService, replyActivity, dc);
-            return await dc.EndDialogAsync(success, cancellationToken);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return await dc.EndDialogAsync(Intermediator.Resources.Strings.NotifyClientRequestRejected, cancellationToken);
+            }
         }
     }
 }
