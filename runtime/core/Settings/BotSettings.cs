@@ -14,12 +14,12 @@ namespace Microsoft.BotFramework.Composer.Core.Settings
 
         public string MicrosoftAppId
         {
-            get { return "1eb2b597-2577-4f15-9d77-4d239e84037b"; }
+            get { return "914b46ec-a637-40d3-986b-ab2472aef449"; }
         }
 
         public string MicrosoftAppPassword
         {
-            get { return "MctT_6En~17h406Z63x4wE1h.-c8N.my1i"; }
+            get { return "~gMYu.I.0MKtxxSn-ho92qmz28Gmr_N4~F"; }
         }
 
         public CosmosDbPartitionedStorageOptions CosmosDb { get; set; }
@@ -59,7 +59,7 @@ namespace Microsoft.BotFramework.Composer.Core.Settings
 
         public string ConnectionString
         {
-            get { return @"Server=tcp:chatbot-server-demo.database.windows.net,1433;Initial Catalog=chatbotdemo;Persist Security Info=False;User ID=serveradmin;Password=c1v1c@admin;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"; }
+            get { return @"Server=tcp:chatbotserverdemo.database.windows.net,1433;Initial Catalog=chatbotdemo;Persist Security Info=False;User ID=serveradmin;Password=admin123..;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"; }
         }
     }
 }

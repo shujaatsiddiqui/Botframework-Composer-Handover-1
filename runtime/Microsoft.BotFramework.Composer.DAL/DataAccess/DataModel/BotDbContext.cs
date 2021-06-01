@@ -12,6 +12,12 @@ namespace Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel
         {
         }
 
+        /// <summary>
+        /// Override this method to configure the database (and other options) to be used for this context.
+        /// This method is called for each instance of the context that is created. 
+        /// The base implementation does nothing.
+        /// </summary>
+        /// <param name="optionsBuilder"></param>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
