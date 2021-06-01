@@ -11,10 +11,7 @@ namespace Microsoft.BotFramework.Composer.DAL.Implementation
     {
         private readonly IRepository<Message> repository;
 
-        public MessageService()
-        {
-            this.repository = new Repository<Message>(new BotDbContext());
-        }
+       
         public MessageService(IRepository<Message> repository)
         {
             this.repository = repository;

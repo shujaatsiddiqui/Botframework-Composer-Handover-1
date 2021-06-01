@@ -16,6 +16,8 @@ using Microsoft.BotFramework.Composer.Intermediator.Resources;
 using Microsoft.BotFramework.Composer.Core;
 using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
 using Microsoft.BotFramework.Composer.DAL.Implementation;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Abstraction;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
 
 namespace Microsoft.BotFramework.Composer.CustomAction.Action
 {
@@ -24,12 +26,17 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
         private readonly MessageRouter _messageRouter;
         private readonly ILogger<WatchDialog> _logger;
         private readonly IUserService userService;
+        private readonly IRepository<BotReply> botReplyRepo;
 
         [JsonConstructor]
         public WatchDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
-            this.userService = new UserService();
+
+            this.userService = Configuration.ServiceProvider.GetRequiredService<IUserService>();
+            this.botReplyRepo = Configuration.ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<IRepository<BotReply>>();
+
+
             // enable instances of this command as debug break point
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
 
@@ -88,7 +95,7 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
             _logger.LogInformation($"{replyMessage.Text} - {activity.From.Id}");
             await dc.Context.SendActivityAsync(replyMessage, cancellationToken);
 
-            Helper.StoreBotReply(this.userService, replyMessage, dc);
+            Helper.StoreBotReply(botReplyRepo, this.userService, replyMessage, dc);
 
             if (ResultProperty != null)
                 dc.State.SetValue(ResultProperty.GetValue(dc.State), true);

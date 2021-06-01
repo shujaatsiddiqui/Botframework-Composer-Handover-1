@@ -14,10 +14,7 @@ namespace Microsoft.BotFramework.Composer.DAL.Implementation
         IRepository<User> userRepository;
         private static readonly string SITE_DOMAIN_KEY = "siteDomain";
 
-        public UserService()
-        {
-            this.userRepository = new Repository<User>(new BotDbContext());
-        }
+        
         public UserService(IRepository<User> repository)
         {
             this.userRepository = repository;

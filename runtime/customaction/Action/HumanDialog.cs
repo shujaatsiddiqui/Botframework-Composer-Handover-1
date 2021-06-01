@@ -10,6 +10,10 @@ using Microsoft.BotFramework.Composer.Intermediator.Resources;
 using Microsoft.BotFramework.Composer.Core;
 using System;
 using Microsoft.BotFramework.Composer.DAL.Implementation;
+using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Abstraction;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
 
 namespace Microsoft.BotFramework.Composer.CustomAction.Action
 {
@@ -17,13 +21,15 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
     {
         private readonly MessageRouter _messageRouter;
         private readonly MessageRouterResultHandler _messageRouterResultHandler;
-        private readonly UserService userService;
+        private readonly IUserService userService;
+        private readonly IRepository<BotReply> botReplyRepo;
 
         [JsonConstructor]
         public HumanDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
            : base()
         {
-            this.userService = new UserService();
+            this.userService = Configuration.ServiceProvider.GetRequiredService<IUserService>();
+            this.botReplyRepo = Configuration.ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<IRepository<BotReply>>();
             // enable instances of this command as debug break point
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
 
@@ -58,15 +64,7 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
             var replyActivity = activity.CreateReply(Strings.NotifyClientWaitForRequestHandling);
             await dc.Context.SendActivityAsync(replyActivity, cancellationToken);
 
-            Helper.StoreBotReply(this.userService, replyActivity, dc);
-            //new Repository<ConversationRequest>(new BotDbContext())
-            //    .Add(new ConversationRequest
-            //    {
-            //        CreationDate = DateTime.Now,
-            //        RequesterId = user.UserId,
-            //        Requester = user
-            //    });
-            //return EndOfTurn;
+            Helper.StoreBotReply(this.botReplyRepo,this.userService, replyActivity, dc);
             return await dc.EndDialogAsync(messageRouterResult, cancellationToken);
         }
     }

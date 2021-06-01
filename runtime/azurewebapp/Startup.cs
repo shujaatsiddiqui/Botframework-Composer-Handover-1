@@ -33,6 +33,7 @@ using Microsoft.BotFramework.Composer.Core.Settings;
 using Microsoft.BotFramework.Composer.CustomAction;
 using Microsoft.BotFramework.Composer.CustomAction.Action;
 using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
 using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Abstraction;
 using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Implementation;
 using Microsoft.BotFramework.Composer.DAL.Implementation;
@@ -268,12 +269,11 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
             services.AddSingleton(userState);
             services.AddSingleton(conversationState);
 
-            //// Configure bot loading path
+            // Configure bot loading path
             var botDir = settings.Bot;
             var resourceExplorer = new ResourceExplorer().AddFolder(botDir);
-
-            //var defaultLocale = Configuration.GetValue<string>("defaultLanguage") ?? "en-us";
-            //var rootDialog = GetRootDialog(botDir);
+            var defaultLocale = Configuration.GetValue<string>("defaultLanguage") ?? "en-us";
+            var rootDialog = GetRootDialog(botDir);
 
             services.AddSingleton(resourceExplorer);
 
@@ -287,37 +287,43 @@ namespace Microsoft.BotFramework.Composer.WebAppTemplates
             services.AddDbContext<BotDbContext>(
                 options =>
             options.UseSqlServer(settings.ConnectionString),
-                ServiceLifetime.Transient);
+                ServiceLifetime.Scoped);
 
-            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
-            services.AddTransient<IMessageService, MessageService>();
-            services.AddTransient<IUserService, UserService>();
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-            //services.AddSingleton<IBot, ComposerBot>();
-            services.AddTransient<IBot, ComposerBot>();
+            services.AddTransient<IMessageService>(sp =>
+            {
+                var repository = sp.CreateScope().ServiceProvider.GetService<IRepository<Message>>();
+                return new MessageService(repository);
+            });
 
-            services.AddTransient<Dialog, WatchDialog>();
+            services.AddTransient<IUserService>(sp =>
+            {
+                var repository = sp.CreateScope().ServiceProvider.GetService<IRepository<User>>();
+                return new UserService(repository);
+            });
 
-            //services.AddSingleton<IBot>(s =>
-            //    new ComposerBot(
-            //        s.GetService<UserService>(),
-            //        s.GetService<ConversationState>(),
-            //        s.GetService<UserState>(),
-            //        s.GetService<ResourceExplorer>(),
-            //        s.GetService<BotFrameworkClient>(),
-            //        s.GetService<SkillConversationIdFactoryBase>(),
-            //        s.GetService<MessageRouter>(),
-            //        s.GetService<MessageRouterResultHandler>(),
-            //        s.GetService<IBotTelemetryClient>(),
-            //        rootDialog,
-            //        defaultLocale,
-            //        removeRecipientMention));
+            services.AddTransient<IBot>(s =>
+                            new ComposerBot(
+                                s.GetService<IUserService>(),
+                                s.GetService<IMessageService>(),
+                                s.GetService<ConversationState>(),
+                                s.GetService<UserState>(),
+                                s.GetService<ResourceExplorer>(),
+                                s.GetService<BotFrameworkClient>(),
+                                s.GetService<SkillConversationIdFactoryBase>(),
+                                s.GetService<MessageRouter>(),
+                                s.GetService<MessageRouterResultHandler>(),
+                                s.GetService<IBotTelemetryClient>(),
+                                rootDialog,
+                                defaultLocale,
+                                removeRecipientMention));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
         {
-            CustomAction.Configuration.ServiceProvider = serviceProvider;
+            CustomAction.Configuration.ServiceProvider = app.ApplicationServices;
             CustomAction.Configuration.LoggerFactory = loggerFactory;
 
             app.UseDefaultFiles();

@@ -2,7 +2,9 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.BotFramework.Composer.DAL.Implementation;
+using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
 using Microsoft.BotFramework.Composer.Intermediator;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -20,13 +22,14 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
     {
         private readonly MessageRouter _messageRouter;
         private readonly ILogger<GetRequestsDialog> _logger;
-        private readonly UserService userService;
+        private readonly IUserService userService;
 
         [JsonConstructor]
         public GetRequestsDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
-            this.userService = new UserService();
+            this.userService = Configuration.ServiceProvider.GetRequiredService<IUserService>();
+
             // enable instances of this command as debug break point
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
 

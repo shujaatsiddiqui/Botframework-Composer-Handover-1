@@ -3,9 +3,12 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel;
 using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Abstraction;
 using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Implementation;
 using Microsoft.BotFramework.Composer.DAL.Implementation;
+using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
 using Microsoft.BotFramework.Composer.Intermediator;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -23,13 +26,16 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
         private readonly MessageRouter _messageRouter;
         private readonly MessageRouterResultHandler _messageRouterResultHandler;
         private readonly ILogger<DisconnectDialog> _logger;
-        private UserService userService;
+        private IUserService userService;
+        private readonly IRepository<ConversationRequest> conversationStateRepo;
 
         [JsonConstructor]
         public DisconnectDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
-            this.userService = new UserService();
+            this.userService = Configuration.ServiceProvider.GetRequiredService<IUserService>();
+            this.conversationStateRepo = Configuration.ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<IRepository<ConversationRequest>>();
+
             // enable instances of this command as debug break point
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
 
@@ -68,14 +74,13 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
                     User userAgent = userService.GetUserModelFromChatId(disconnectResult.Connection.ConversationReference1.User.Id);
                     User userCustomer = userService.GetUserModelFromChatId(disconnectResult.Connection.ConversationReference2.User.Id);
 
-                    new Repository<ConversationRequest>(new BotDbContext())
-                            .Add(new ConversationRequest
-                            {
-                                CreationDate = DateTime.Now,
-                                RequesterId = (int)userCustomer?.UserId,
-                                AgentId = (int)userAgent?.UserId,
-                                State = RequestState.Finished
-                            });
+                    conversationStateRepo.Add(new ConversationRequest
+                    {
+                        CreationDate = DateTime.Now,
+                        RequesterId = (int)userCustomer?.UserId,
+                        AgentId = (int)userAgent?.UserId,
+                        State = RequestState.Finished
+                    });
                 }
 
 

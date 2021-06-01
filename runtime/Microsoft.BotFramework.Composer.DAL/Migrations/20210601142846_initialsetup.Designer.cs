@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Microsoft.BotFramework.Composer.DAL.Migrations
 {
     [DbContext(typeof(BotDbContext))]
-    [Migration("20210601062143_DBCreationScript")]
-    partial class DBCreationScript
+    [Migration("20210601142846_initialsetup")]
+    partial class initialsetup
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

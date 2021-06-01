@@ -37,7 +37,6 @@ namespace Microsoft.BotFramework.Composer.Core
         private DialogManager dialogManager;
         private readonly IUserService userService;
         private readonly IMessageService messageService;
-        private readonly IRepository<BotReply> repoBotReply;
         private readonly ConversationState conversationState;
         private readonly IStatePropertyAccessor<DialogState> dialogState;
         private readonly string rootDialogFile;
@@ -47,28 +46,20 @@ namespace Microsoft.BotFramework.Composer.Core
         private readonly MessageRouter messageRouter;
         private readonly MessageRouterResultHandler messageRouterResultHandler;
 
-        public ComposerBot(IConfiguration configuration,
+        public ComposerBot(IUserService userService,
             IMessageService messageService,
-            IRepository<BotReply> repoBotReply,
-            IUserService userService, ConversationState conversationState, UserState userState, ResourceExplorer resourceExplorer, BotFrameworkClient skillClient, SkillConversationIdFactoryBase conversationIdFactory, MessageRouter messageRouter, MessageRouterResultHandler messageRouterResultHandler, IBotTelemetryClient telemetryClient)
+            ConversationState conversationState, UserState userState, ResourceExplorer resourceExplorer, BotFrameworkClient skillClient, SkillConversationIdFactoryBase conversationIdFactory, MessageRouter messageRouter, MessageRouterResultHandler messageRouterResultHandler, IBotTelemetryClient telemetryClient, string rootDialog, string defaultLocale, bool removeRecipientMention = false)
         {
-            //// Configure bot loading path
-            var settings = new BotSettings();
-            configuration.Bind(settings);
-            var botDir = settings.Bot;
-            defaultLocale = "en-us";
-            var rootDialog = GetRootDialog(botDir);
-
             this.userService = userService;
             this.messageService = messageService;
-            this.repoBotReply = repoBotReply;
             this.conversationState = conversationState;
             this.userState = userState;
             this.dialogState = conversationState.CreateProperty<DialogState>("DialogState");
             this.resourceExplorer = resourceExplorer;
             this.rootDialogFile = rootDialog;
+            this.defaultLocale = defaultLocale;
             this.telemetryClient = telemetryClient;
-            this.removeRecipientMention = false;
+            this.removeRecipientMention = removeRecipientMention;
             this.messageRouter = messageRouter;
             this.messageRouterResultHandler = messageRouterResultHandler;
 
@@ -172,10 +163,6 @@ namespace Microsoft.BotFramework.Composer.Core
             {
                 dialogManager.UseTelemetry(this.telemetryClient);
             }
-        }
-        protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
-        {
-            //await turnContext.SendActivityAsync("Welcome to State Bot Sample. May I have your name?");
         }
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> context, CancellationToken cancellationToken)
         {

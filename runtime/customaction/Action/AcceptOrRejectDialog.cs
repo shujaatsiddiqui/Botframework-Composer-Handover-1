@@ -17,6 +17,9 @@ using Microsoft.BotFramework.Composer.DAL.Implementation;
 using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Implementation;
 using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel.Models;
 using Microsoft.BotFramework.Composer.DAL.DataAccess.DataModel;
+using Microsoft.BotFramework.Composer.DAL.Services.Abstraction;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.BotFramework.Composer.DAL.DataAccess.Repository.Abstraction;
 
 namespace Microsoft.BotFramework.Composer.CustomAction.Action
 {
@@ -26,14 +29,18 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
         private readonly ILogger<AcceptOrRejectDialog> _logger;
         private readonly MessageRouterResultHandler _messageRouterResultHandler;
         private readonly ConnectionRequestHandler _connectionRequestHandler;
-        private readonly UserService userService;
+        private readonly IUserService userService;
+        private readonly IRepository<ConversationRequest> conversationStateRepo;
+        private readonly IRepository<BotReply> botReplyRepo;
 
         [JsonConstructor]
         public AcceptOrRejectDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
 
-            this.userService = new UserService();
+            this.userService = Configuration.ServiceProvider.GetRequiredService<IUserService>();
+            conversationStateRepo = Configuration.ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<IRepository<ConversationRequest>>();
+            this.botReplyRepo = Configuration.ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<IRepository<BotReply>>();
             // enable instances of this command as debug break point
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
 
@@ -114,14 +121,14 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
                         User userCustomer = userService.GetUserModelFromChatId(requestorChannelAccount.Id);
                         User userAgent = userService.GetUserModelFromChatId(sender.User.Id);
 
-                        new Repository<ConversationRequest>(new BotDbContext())
-                            .Add(new ConversationRequest
-                            {
-                                CreationDate = DateTime.Now,
-                                RequesterId = (int)userCustomer?.UserId,
-                                AgentId = (int)userAgent?.UserId,
-                                State = RequestState.InProgress
-                            });
+                        this.conversationStateRepo.Add(new ConversationRequest
+                        {
+                            CreationDate = DateTime.Now,
+                            RequesterId = (int)userCustomer?.UserId,
+                            AgentId = (int)userAgent?.UserId,
+                            State = RequestState.InProgress
+                        });
+
                         await _messageRouterResultHandler.HandleResultAsync(messageRouterResult, userService: userService);
                         success = true;
                     }
@@ -137,7 +144,7 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
                 if (ResultProperty != null)
                     dc.State.SetValue(ResultProperty.GetValue(dc.State), success);
 
-                Helper.StoreBotReply(this.userService, replyActivity, dc);
+                Helper.StoreBotReply(this.botReplyRepo, this.userService, replyActivity, dc);
                 return await dc.EndDialogAsync(success, cancellationToken);
             }
             catch (Exception ex)
