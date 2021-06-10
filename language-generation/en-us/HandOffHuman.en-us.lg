@@ -32,7 +32,7 @@
     Text = Are you sure you want to disconnect with user?
 ]
 
-# ConfirmInput_Prompt_RDEsp6()
+# SendActivity_u4Xpiw()
 [Activity
-    Text = Are you sure you want to reject connection with user ${dialog.user}?
+    Text = Unfortunately your request could not be processed
 ]

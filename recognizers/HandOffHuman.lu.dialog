@@ -1,0 +1,8 @@
+{
+  "$kind": "Microsoft.MultiLanguageRecognizer",
+  "id": "LUIS_HandOffHuman",
+  "recognizers": {
+    "en-us": "HandOffHuman.en-us.lu",
+    "": "HandOffHuman.en-us.lu"
+  }
+}

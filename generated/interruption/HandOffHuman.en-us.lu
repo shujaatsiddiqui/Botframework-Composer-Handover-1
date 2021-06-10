@@ -1,0 +1,55 @@
+
+> LUIS application information
+> !# @app.versionId = 0.1
+> !# @app.culture = en-us
+> !# @app.luis_schema_version = 3.2.0
+
+
+> # Intent definitions
+
+# Watch
+- \\watch
+
+
+# TalkToHuman
+- \\TalkToHuman
+- \\human
+
+
+# AcceptRequest
+- \\Accept
+- \\000000 Accept
+- \\000000
+
+
+# Unwatch
+- \\unwatch
+
+
+# GetRequests
+- \\GetRequests
+
+
+# RejectRequest
+- \\Reject
+- \\000000 Reject
+
+
+# Disconnect
+- \\Disconnect
+
+
+> # Entity definitions
+
+
+> # PREBUILT Entity definitions
+
+
+> # Phrase list definitions
+
+
+> # List entities
+
+> # RegEx entities
+
+

@@ -18,10 +18,11 @@
         {
           "$kind": "PostDialog",
           "$designer": {
-            "id": "klck5n"
+            "id": "YIKxvy"
           }
         }
-      ]
+      ],
+      "priority": 8
     },
     {
       "$kind": "Microsoft.OnIntent",
@@ -64,7 +65,9 @@
             }
           ]
         }
-      ]
+      ],
+      "priority": 1,
+      "condition": "#Watch.score >= 0.8"
     },
     {
       "$kind": "Microsoft.OnIntent",
@@ -106,7 +109,9 @@
             }
           ]
         }
-      ]
+      ],
+      "priority": 2,
+      "condition": "#TalkToHuman.score >= 0.8"
     },
     {
       "$kind": "Microsoft.OnIntent",
@@ -133,30 +138,50 @@
           ]
         },
         {
-          "$kind": "AcceptOrRejectDialog",
-          "$designer": {
-            "id": "rNAa7C"
-          },
-          "conversationProperty": "=dialog.conversation",
-          "userIdProperty": "=dialog.userID",
-          "acceptProperty": true
-        },
-        {
           "$kind": "Microsoft.IfCondition",
           "$designer": {
-            "id": "aL5y3N"
+            "id": "mw5OQZ"
           },
-          "condition": "=$response",
+          "condition": "= isMatch(stringOrValue('${turn.activity.text}'), '(?i)^\\\\\\\\000000 accept (?<conversation>.*) (?<user>.*)$')",
           "actions": [
             {
-              "$kind": "UnwatchDialog",
+              "$kind": "AcceptOrRejectDialog",
               "$designer": {
-                "id": "XOCtXy"
-              }
+                "id": "VuuWIB"
+              },
+              "conversationProperty": "=dialog.conversation",
+              "userIdProperty": "=dialog.userID",
+              "acceptProperty": true
+            },
+            {
+              "$kind": "Microsoft.IfCondition",
+              "$designer": {
+                "id": "XIUVYj"
+              },
+              "condition": "=$response",
+              "actions": [
+                {
+                  "$kind": "UnwatchDialog",
+                  "$designer": {
+                    "id": "Hj9uL1"
+                  }
+                }
+              ]
+            }
+          ],
+          "elseActions": [
+            {
+              "$kind": "Microsoft.SendActivity",
+              "$designer": {
+                "id": "u4Xpiw"
+              },
+              "activity": "${SendActivity_u4Xpiw()}"
             }
           ]
         }
-      ]
+      ],
+      "priority": 0,
+      "condition": "#AcceptRequest.score >= 0.2"
     },
     {
       "$kind": "Microsoft.OnIntent",
@@ -203,7 +228,9 @@
             }
           ]
         }
-      ]
+      ],
+      "priority": 4,
+      "condition": "#Unwatch.score >= 0.8"
     },
     {
       "$kind": "Microsoft.OnIntent",
@@ -220,7 +247,9 @@
           },
           "resultProperty": "$result"
         }
-      ]
+      ],
+      "priority": 5,
+      "condition": "#GetRequests.score >= 0.8"
     },
     {
       "$kind": "Microsoft.OnIntent",
@@ -247,43 +276,17 @@
           ]
         },
         {
-          "$kind": "Microsoft.ConfirmInput",
+          "$kind": "AcceptOrRejectDialog",
           "$designer": {
-            "id": "RDEsp6"
+            "id": "AjRF8m"
           },
-          "defaultLocale": "en-us",
-          "disabled": false,
-          "maxTurnCount": 3,
-          "alwaysPrompt": true,
-          "allowInterruptions": false,
-          "unrecognizedPrompt": "",
-          "invalidPrompt": "",
-          "defaultValueResponse": "",
-          "prompt": "${ConfirmInput_Prompt_RDEsp6()}",
-          "choiceOptions": {
-            "includeNumbers": true
-          },
-          "property": "$response"
-        },
-        {
-          "$kind": "Microsoft.IfCondition",
-          "$designer": {
-            "id": "FoFadH"
-          },
-          "condition": "=$response",
-          "actions": [
-            {
-              "$kind": "AcceptOrRejectDialog",
-              "$designer": {
-                "id": "rZR37P"
-              },
-              "conversationProperty": "=dialog.conversation",
-              "userIdProperty": "=dialog.userID",
-              "acceptProperty": false
-            }
-          ]
+          "conversationProperty": "=dialog.conversation",
+          "userIdProperty": "=dialog.userID",
+          "acceptProperty": false
         }
-      ]
+      ],
+      "priority": 0,
+      "condition": "#RejectRequest.score >= 0.2"
     },
     {
       "$kind": "Microsoft.OnIntent",
@@ -347,44 +350,14 @@
             }
           ]
         }
-      ]
+      ],
+      "priority": 7,
+      "condition": "#Disconnect.score >= 0.8"
     }
   ],
   "$schema": "https://raw.githubusercontent.com/microsoft/BotFramework-Composer/stable/Composer/packages/server/schemas/sdk.schema",
   "generator": "HandOffHuman.lg",
   "id": "HandOffHuman",
-  "recognizer": {
-    "$kind": "Microsoft.RegexRecognizer",
-    "intents": [
-      {
-        "intent": "Watch",
-        "pattern": "(?i)^watch$"
-      },
-      {
-        "intent": "TalkToHuman",
-        "pattern": "(?i).*human.*"
-      },
-      {
-        "intent": "AcceptRequest",
-        "pattern": "(?i)^accept (?<conversation>.*) (?<user>.*)$"
-      },
-      {
-        "intent": "Unwatch",
-        "pattern": "(?i)^unwatch$"
-      },
-      {
-        "intent": "GetRequests",
-        "pattern": "(?i)^get\\s?request[s]?$"
-      },
-      {
-        "intent": "RejectRequest",
-        "pattern": "(?i)^reject (?<conversation>.*) (?<user>.*)$"
-      },
-      {
-        "intent": "Disconnect",
-        "pattern": "(?i)^disconnect$"
-      }
-    ]
-  },
+  "recognizer": "HandOffHuman.lu.qna",
   "autoEndDialog": "=turn.activity.recipient.role=='skill'"
 }

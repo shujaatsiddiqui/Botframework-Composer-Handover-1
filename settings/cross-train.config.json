@@ -1,0 +1,14 @@
+{
+  "HandOffHuman.en-us": {
+    "rootDialog": true,
+    "triggers": {
+      "Watch": [],
+      "TalkToHuman": [],
+      "AcceptRequest": [],
+      "Unwatch": [],
+      "GetRequests": [],
+      "RejectRequest": [],
+      "Disconnect": []
+    }
+  }
+}

@@ -1,0 +1,34 @@
+
+# Watch
+- \\watch
+
+
+
+# TalkToHuman
+- \\TalkToHuman
+- \\human 
+
+# AcceptRequest
+-\\Accept
+-\\000000 Accept
+-\\000000
+
+
+
+
+
+# Unwatch
+- \\unwatch
+
+
+# GetRequests
+- \\GetRequests
+
+# RejectRequest
+-\\Reject
+-\\000000 Reject
+-\\000000
+
+
+# Disconnect
+- \\Disconnect
