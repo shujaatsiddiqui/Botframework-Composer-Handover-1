@@ -36,3 +36,13 @@
 [Activity
     Text = Unfortunately your request could not be processed
 ]
+
+# TextInput_Prompt_ZhwURo()
+[Activity
+    Text = Hi, i am BOT. May i have your name please?
+]
+
+# SendActivity_8isORo()
+[Activity
+    Text = Hello ${user.name}, How may i help you?
+]

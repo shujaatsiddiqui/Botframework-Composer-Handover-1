@@ -45,8 +45,11 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
             var messageRouterResult = await _messageRouter.RouteMessageIfSenderIsConnectedAsync(activity);
 
             if (ResultProperty != null)
-                dc.State.SetValue(ResultProperty.GetValue(dc.State), messageRouterResult);
-
+                if (messageRouterResult.Type == Underscore.Bot.MessageRouting.Results.
+                 MessageRoutingResultType.MessageRouted)
+                    dc.State.SetValue(ResultProperty.GetValue(dc.State), true);
+                else
+                    dc.State.SetValue(ResultProperty.GetValue(dc.State), false);
             return await dc.EndDialogAsync(null, cancellationToken);
         }
     }

@@ -92,9 +92,9 @@ namespace Microsoft.BotFramework.Composer.Core
             }
 
             messageRouter.StoreConversationReferences(turnContext?.Activity);
+            if (flow.LastQuestionAsked == ConversationFlow.Question.Stop)
+                await this.dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
             await FillOutUserProfileAsync(user, flow, profile, turnContext, cancellationToken);
-
-            await this.dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
             //await base.OnTurnAsync(turnContext, cancellationToken);
             await this.conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
             await this.userState.SaveChangesAsync(turnContext, false, cancellationToken);

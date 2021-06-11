@@ -19,7 +19,33 @@
           "$kind": "PostDialog",
           "$designer": {
             "id": "YIKxvy"
-          }
+          },
+          "resultProperty": "$response"
+        },
+        {
+          "$kind": "Microsoft.IfCondition",
+          "$designer": {
+            "id": "TeqTjP"
+          },
+          "condition": "=$response",
+          "elseActions": [
+            {
+              "$kind": "Microsoft.QnAMakerDialog",
+              "$designer": {
+                "id": "aCOHFM"
+              },
+              "knowledgeBaseId": "=settings.qna.knowledgebaseid",
+              "endpointKey": "=settings.qna.endpointkey",
+              "hostname": "=settings.qna.hostname",
+              "noAnswer": "Sorry, I did not find an answer.",
+              "threshold": 0.3,
+              "activeLearningCardTitle": "Did you mean:",
+              "cardNoMatchText": "None of the above.",
+              "cardNoMatchResponse": "Thanks for the feedback.",
+              "top": 3,
+              "isTest": false
+            }
+          ]
         }
       ],
       "priority": 8
