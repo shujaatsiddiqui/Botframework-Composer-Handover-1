@@ -12,9 +12,9 @@ namespace Microsoft.BotFramework.Composer.Core.Settings
 
         public BlobStorageConfiguration BlobStorage { get; set; }
 
-        public string MicrosoftAppId { get; set; }
+        public string MicrosoftAppId  = "41cad738-7fa2-48dd-99b8-2d6ae8b97791";
 
-        public string MicrosoftAppPassword { get; set; }
+        public string MicrosoftAppPassword  = "dTjFhtU55-9wr12l4yblUn.-.PNi~Jaq_5";
 
         public CosmosDbPartitionedStorageOptions CosmosDb { get; set; }
 

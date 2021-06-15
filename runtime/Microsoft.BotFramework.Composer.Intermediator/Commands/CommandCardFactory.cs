@@ -3,6 +3,7 @@ using Microsoft.BotFramework.Composer.Intermediator.Resources;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Xml;
 using Underscore.Bot.MessageRouting.DataStore;
 using Underscore.Bot.MessageRouting.Models;
 
@@ -37,8 +38,8 @@ namespace Microsoft.BotFramework.Composer.Intermediator
             string requestorChannelId =
                 CultureInfo.CurrentCulture.TextInfo.ToTitleCase(connectionRequest.Requestor.ChannelId);
 
-            var acceptValue = $"Accept {connectionRequest.Requestor.Conversation?.Id} {requestorChannelAccount?.Id}";
-            var rejectValue = $"Reject {connectionRequest.Requestor.Conversation?.Id} {requestorChannelAccount?.Id}";
+            var acceptValue = $"<at>{XmlConvert.EncodeName("HandoffBot")}</at> Accept {connectionRequest.Requestor.Conversation?.Id} {requestorChannelAccount?.Id}";
+            var rejectValue = $"<at>{XmlConvert.EncodeName("HandoffBot")}</at> Reject {connectionRequest.Requestor.Conversation?.Id} {requestorChannelAccount?.Id}";
 
             HeroCard card = new HeroCard()
             {

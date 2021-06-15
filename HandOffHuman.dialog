@@ -52,30 +52,10 @@
       },
       "actions": [
         {
-          "$kind": "Microsoft.IfCondition",
+          "$kind": "PostDialog",
           "$designer": {
-            "id": "SmUwRX"
-          },
-          "condition": "=dialog.watching || dialog.connected",
-          "actions": [
-            {
-              "$kind": "PostDialog",
-              "$designer": {
-                "id": "rWerSJ"
-              }
-            }
-          ],
-          "elseActions": [
-            {
-              "$kind": "Microsoft.TraceActivity",
-              "$designer": {
-                "id": "1XAV0P"
-              },
-              "name": "Handover",
-              "label": "Post",
-              "value": "Not watching nor connected"
-            }
-          ]
+            "id": "KXlTCc"
+          }
         }
       ]
     },
@@ -384,7 +364,7 @@
     "intents": [
       {
         "intent": "Watch",
-        "pattern": "(?i)^watch$"
+        "pattern": "(?i).*watch.*"
       },
       {
         "intent": "TalkToHuman",
@@ -392,23 +372,23 @@
       },
       {
         "intent": "AcceptRequest",
-        "pattern": "(?i)^accept (?<conversation>.*) (?<user>.*)$"
+        "pattern": "(?i).*accept (?<conversation>.*) (?<user>.*)$"
       },
       {
         "intent": "Unwatch",
-        "pattern": "(?i)^unwatch$"
+        "pattern": "(?i).*unwatch.*"
       },
       {
         "intent": "GetRequests",
-        "pattern": "(?i)^get\\s?request[s]?$"
+        "pattern": "(?i)^.*get\\s?request[s]?$"
       },
       {
         "intent": "RejectRequest",
-        "pattern": "(?i)^reject (?<conversation>.*) (?<user>.*)$"
+        "pattern": "(?i).*reject (?<conversation>.*) (?<user>.*)$"
       },
       {
         "intent": "Disconnect",
-        "pattern": "(?i)^disconnect$"
+        "pattern": "(?i)^.*disconnect$"
       }
     ]
   },
