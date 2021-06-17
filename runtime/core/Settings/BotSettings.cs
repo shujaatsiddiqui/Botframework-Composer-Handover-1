@@ -14,12 +14,12 @@ namespace Microsoft.BotFramework.Composer.Core.Settings
 
         public string MicrosoftAppId
         {
-            get { return "96da3395-a60e-4460-a185-cb60508712ba"; }
+            get { return "a0312873-2617-4daa-9092-250fa79a04fd"; }
         }
 
         public string MicrosoftAppPassword
         {
-            get { return "h1Zd0LY~P--0c4CU-6_3Sc9W0yTKidGlY9"; }
+            get { return "7yzQc-~R158~zAGxblrBf3hGMEX_j9h-~o"; }
         }
 
         public CosmosDbPartitionedStorageOptions CosmosDb { get; set; }
@@ -59,7 +59,7 @@ namespace Microsoft.BotFramework.Composer.Core.Settings
 
         public string ConnectionString
         {
-            get { return @"Server=tcp:chatbotserverdemo.database.windows.net,1433;Initial Catalog=chatbotdemo;Persist Security Info=False;User ID=serveradmin;Password=admin123..;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"; }
+            get { return @"Server=tcp:wcubot.database.windows.net,1433;Initial Catalog=wcufabot;Persist Security Info=False;User ID=serveradmin;Password=Wcu@admin1!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"; }
         }
     }
 }

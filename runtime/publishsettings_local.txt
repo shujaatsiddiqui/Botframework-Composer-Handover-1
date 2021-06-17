@@ -1,0 +1,39 @@
+{
+  "name": "ShuWestCoastBotDemo",
+  "environment": "composer",
+  "runtimeIdentifier": "win-x64",
+  "resourceGroup": "testAppdemo",
+  "botName": "ShuWestCoastBotDemo",
+  "subscriptionId": "b163b588-dc5f-45bc-9026-744965a90275",
+  "region": "eastasia",
+  "settings": {
+    "applicationInsights": {
+      "InstrumentationKey": ""
+    },
+    "cosmosDb": {
+      "cosmosDBEndpoint": "",
+      "authKey": "",
+      "databaseId": "botstate-db",
+      "containerId": "botstate-container"
+    },
+    "blobStorage": {
+      "connectionString": "",
+      "container": ""
+    },
+    "luis": {
+      "authoringKey": "a0669610454e49c48598464d6d716539",
+      "authoringEndpoint": "https://westus.api.cognitive.microsoft.com/",
+      "endpointKey": "a0669610454e49c48598464d6d716539",
+      "endpoint": "https://westus.api.cognitive.microsoft.com/",
+      "region": "westus"
+    },
+    "qna": {
+      "subscriptionKey": "df806b8e5cd047d9b0450d62cc9db5be",
+      "endpoint": "https://westcoastqna.azurewebsites.net/qnamaker"
+    },
+    "MicrosoftAppId": "96da3395-a60e-4460-a185-cb60508712ba",
+    "MicrosoftAppPassword": "1R.66HAlEu3h0C--o3eA..LHDniW4ucT7X"
+  },
+  "luisResource": "luiprediction",
+  "hostname": "ShuWestCoastBotDemo"
+}

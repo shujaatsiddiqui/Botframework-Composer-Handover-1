@@ -14,6 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		..\settings\appsettings.json = ..\settings\appsettings.json
+		appsettings_local.txt = appsettings_local.txt
+		appsettings_prod.txt = appsettings_prod.txt
+		publishsettings_local.txt = publishsettings_local.txt
+		publishsettings_prod.txt = publishsettings_prod.txt
 		..\schemas\sdk.schema = ..\schemas\sdk.schema
 	EndProjectSection
 EndProject
@@ -21,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.BotFramework.Comp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotMessageRouting", "bot-message-routing\BotMessageRouting.csproj", "{2218A7DF-5981-41F7-AD0E-2667CECBB05E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.BotFramework.Composer.DAL", "Microsoft.BotFramework.Composer.DAL\Microsoft.BotFramework.Composer.DAL.csproj", "{E9F983C4-5868-44C8-AD35-11D68A4FB88D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.BotFramework.Composer.DAL", "Microsoft.BotFramework.Composer.DAL\Microsoft.BotFramework.Composer.DAL.csproj", "{E9F983C4-5868-44C8-AD35-11D68A4FB88D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -54,13 +54,13 @@ namespace Microsoft.BotFramework.Composer.Intermediator
                     new CardAction()
                     {
                         Title = Strings.AcceptRequestButtonLabel,
-                        Type = ActionTypes.PostBack,
+                        Type = ActionTypes.ImBack,
                         Value = acceptValue
                     },
                     new CardAction()
                     {
                         Title = Strings.RejectRequestButtonLabel,
-                        Type = ActionTypes.PostBack,
+                        Type = ActionTypes.ImBack,
                         Value = rejectValue
                     }
                 }

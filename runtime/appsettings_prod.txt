@@ -1,0 +1,87 @@
+{
+  "feature": {
+    "UseShowTypingMiddleware": false,
+    "UseInspectionMiddleware": false,
+    "RemoveRecipientMention": false,
+    "UseSetSpeakMiddleware": true
+  },
+  "MicrosoftAppId": "",
+  "cosmosDb": {
+    "authKey": "",
+    "containerId": "botstate-container",
+    "cosmosDBEndpoint": "",
+    "databaseId": "botstate-db"
+  },
+  "applicationInsights": {
+    "InstrumentationKey": ""
+  },
+  "blobStorage": {
+    "connectionString": "",
+    "container": "transcripts"
+  },
+  "speech": {
+    "voiceFontName": "en-US-AriaNeural",
+    "fallbackToTextForSpeechIfEmpty": true
+  },
+  "luis": {
+    "name": "wcfaluisprediction",
+    "authoringEndpoint": "https://westus.api.cognitive.microsoft.com/",
+    "endpoint": "https://westus.api.cognitive.microsoft.com/",
+    "authoringRegion": "westus",
+    "defaultLanguage": "en-us",
+    "environment": "composer",
+    "directVersionPublish": true,
+    "authoringKey": "48167f8886fa49fb90c93f95f0267f32",
+    "endpointKey": "48167f8886fa49fb90c93f95f0267f32"
+  },
+  "luFeatures": {
+    "enablePattern": true,
+    "enableMLEntities": true,
+    "enableListEntities": true,
+    "enableCompositeEntities": true,
+    "enablePrebuiltEntities": true,
+    "enableRegexEntities": true,
+    "enablePhraseLists": true
+  },
+  "publishTargets": [
+    {
+      "name": "Production",
+      "type": "azurePublish",
+      "configuration": "{\"name\":\"wcFinancialAidBot\",\"environment\":\"composer\",\"runtimeIdentifier\":\"win-x64\",\"resourceGroup\":\"wcubot\",\"botName\":\"wcFinancialAidBot\",\"subscriptionId\":\"25289566-e7d7-4b1b-a015-3e6351944d98\",\"region\":\"westus\",\"settings\":{\"applicationInsights\":{\"InstrumentationKey\":\"\"},\"cosmosDb\":{\"cosmosDBEndpoint\":\"\",\"authKey\":\"\",\"databaseId\":\"botstate-db\",\"containerId\":\"botstate-container\"},\"blobStorage\":{\"connectionString\":\"\",\"container\":\"\"},\"luis\":{\"authoringKey\":\"48167f8886fa49fb90c93f95f0267f32\",\"authoringEndpoint\":\"https://westus.api.cognitive.microsoft.com/\",\"endpointKey\":\"48167f8886fa49fb90c93f95f0267f32\",\"endpoint\":\"https://westus.api.cognitive.microsoft.com/\",\"region\":\"westus\"},\"qna\":{\"subscriptionKey\":\"eed468842c5642a2892740787678ccfa\",\"endpoint\":\"https://wcubot.azurewebsites.net/qnamaker\"},\"MicrosoftAppId\":\"a0312873-2617-4daa-9092-250fa79a04fd\",\"MicrosoftAppPassword\":\"7yzQc-~R158~zAGxblrBf3hGMEX_j9h-~o\"},\"luisResource\":\"wcfaluispredictionresource\",\"hostname\":\"wcFinancialAidBot\"}",
+      "lastPublished": "2021-06-17T20:33:43.617Z"
+    }
+  ],
+  "qna": {
+    "knowledgebaseid": "832fd874-9bcd-47d5-a1d8-65da9d7c67c7",
+    "hostname": "https://wcubot.azurewebsites.net/qnamaker",
+    "qnaRegion": "westus",
+    "endpointKey": "832fd874-9bcd-47d5-a1d8-65da9d7c67c7",
+    "subscriptionKey": "eed468842c5642a2892740787678ccfa"
+  },
+  "telemetry": {
+    "logPersonalInformation": false,
+    "logActivities": true
+  },
+  "runtime": {
+    "customRuntime": true,
+    "path": "..\\runtime",
+    "command": "dotnet run --project azurewebapp",
+    "key": ""
+  },
+  "downsampling": {
+    "maxImbalanceRatio": -1
+  },
+  "skillConfiguration": {
+    "isSkill": true,
+    "allowedCallers": []
+  },
+  "skill": {},
+  "defaultLanguage": "en-us",
+  "languages": [
+    "en-us"
+  ],
+  "customFunctions": [],
+  "importedLibraries": [],
+  "skillHostEndpoint": "http://localhost:3980/api/skills",
+  "MicrosoftAppPassword": ""
+}
