@@ -52,7 +52,7 @@
     }
   ],
   "qna": {
-    "knowledgebaseid": "832fd874-9bcd-47d5-a1d8-65da9d7c67c7",
+    "knowledgebaseid": "1ab76704-8404-4619-88be-93bc53102aab",
     "hostname": "https://wcubot.azurewebsites.net/qnamaker",
     "qnaRegion": "westus",
     "endpointKey": "832fd874-9bcd-47d5-a1d8-65da9d7c67c7",
