@@ -1,3 +1,24 @@
+## Step to run the application
+
+install bot composer https://github.com/microsoft/BotFramework-Composer/releases v1.4.1
+install bot emulator https://github.com/Microsoft/BotFramework-Emulator/releases 4.14.0
+For local testing use appsettings_local.txt
+For prod testing use appsettings_prod.txt
+Copy app setting from the file and paste it into the composer settings configuration file.
+click on "Start bot" button.
+
+log into i_humza... account
+
+Luis Account:
+=================
+wcfaluisprediction(composer)-HandOffHuman.en-us.lu
+
+Qna Maker Account:
+==================
+https://www.qnamaker.ai/Home/MyServices
+WCU_FA
+
+
 ## Bot Project
 
 Bot project is the launcher project for the bots written in declarative form (JSON), using the Composer, for the Bot Framework SDK.
