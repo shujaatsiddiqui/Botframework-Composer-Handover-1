@@ -1,5 +1,7 @@
 ## Step to run the application
 
+Current Branch: SQLWithdi
+compile project
 install bot composer https://github.com/microsoft/BotFramework-Composer/releases v1.4.1
 install bot emulator https://github.com/Microsoft/BotFramework-Emulator/releases 4.14.0
 For local testing use appsettings_local.txt
