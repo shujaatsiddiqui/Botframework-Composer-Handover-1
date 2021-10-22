@@ -111,7 +111,7 @@ namespace Microsoft.BotFramework.Composer.Core
             switch (flow.LastQuestionAsked)
             {
                 case ConversationFlow.Question.Start:
-                    await turnContext.SendActivityAsync("Hi my name is BOT. I am here for your assistance. May I have your name?", null, null, cancellationToken);
+                    await turnContext.SendActivityAsync("Demo 002 Hi my name is BOT. I am here for your assistance. May I have your name?", null, null, cancellationToken);
                     flow.LastQuestionAsked = ConversationFlow.Question.Name;
                     break;
                 case ConversationFlow.Question.Name:
