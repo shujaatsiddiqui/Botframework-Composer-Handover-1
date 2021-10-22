@@ -2,7 +2,7 @@
     "luis": {
         "HandOffHuman_en_us_lu": {
             "appId": "a6234996-ab1f-4af9-be19-7813601aebdf",
-            "version": "0.5"
+            "version": "0.4"
         }
     }
 }
