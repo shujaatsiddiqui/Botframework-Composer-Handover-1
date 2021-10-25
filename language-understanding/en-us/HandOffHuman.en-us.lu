@@ -19,14 +19,7 @@
 
 
 # AcceptRequest
--\\Accept
--\\000000 Accept
--\\000000
-
-
-
-
-
+-Request Accepted From User With Dynamic Id
 # Unwatch
 - \\unwatch
 
@@ -35,10 +28,6 @@
 - \\GetRequests
 
 # RejectRequest
--\\Reject
--\\000000 Reject
--\\000000
-
-
+-Request Rejected From User With Dynamic Id
 # Disconnect
 - \\Disconnect

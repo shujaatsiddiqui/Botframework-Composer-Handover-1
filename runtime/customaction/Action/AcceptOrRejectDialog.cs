@@ -75,10 +75,10 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
                 var activity = dc.Context.Activity;
                 bool success = false;
 
-                string[] commands = dc.Context.Activity.Text.Split(' ');
+                string[] commands = dc.Context.Activity.Text.Split(':')[1].Split('@');
 
-                var conversation = commands.Length >= 2 ? commands[2] : ""; //ConversationProperty.GetValue(dc.State);
-                var userId = commands.Length >= 2 ? commands[3] : "";  // UserProperty.GetValue(dc.State);
+                var conversation = commands.Length >= 2 ? commands[0].Trim() : ""; //ConversationProperty.GetValue(dc.State);
+                var userId = commands.Length >= 2 ? commands[1].Trim() : "";  // UserProperty.GetValue(dc.State);
                 bool accept = AcceptProperty.GetValue(dc.State); //commands.Length >= 2 ? commands[1].Equals("\\Reject", StringComparison.InvariantCultureIgnoreCase) ? false : true : true; 
 
                 Activity replyActivity = null;

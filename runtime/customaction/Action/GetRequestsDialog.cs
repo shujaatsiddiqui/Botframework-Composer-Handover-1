@@ -53,26 +53,33 @@ namespace Microsoft.BotFramework.Composer.CustomAction.Action
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             Activity replyActivity = null;
-            var activity = dc.Context.Activity;
-
-            IList<ConnectionRequest> connectionRequests =
-                        _messageRouter.RoutingDataManager.GetConnectionRequests();
-
-            replyActivity = activity.CreateReply();
-
-            if (connectionRequests.Count == 0)
+            try
             {
-                replyActivity.Text = "No pending requests";
+                var activity = dc.Context.Activity;
+
+                IList<ConnectionRequest> connectionRequests =
+                            _messageRouter.RoutingDataManager.GetConnectionRequests();
+
+                replyActivity = activity.CreateReply();
+
+                if (connectionRequests.Count == 0)
+                {
+                    replyActivity.Text = "No pending requests";
+                }
+                else
+                {
+                    replyActivity.Attachments = CommandCardFactory.CreateMultipleConnectionRequestCards(
+                        connectionRequests, userService, activity.Recipient?.Name);
+                }
+
+                //replyActivity.ChannelData = JsonConvert.SerializeObject(connectionRequests);
             }
-            else
+            catch (Exception ex)
             {
-                replyActivity.Attachments = CommandCardFactory.CreateMultipleConnectionRequestCards(
-                    connectionRequests, userService, activity.Recipient?.Name);
+                replyActivity.Text = ex.Message + " | " + ex.StackTrace;
             }
 
-            replyActivity.ChannelData = JsonConvert.SerializeObject(connectionRequests);
             await dc.Context.SendActivityAsync(replyActivity, cancellationToken);
-
             return await dc.EndDialogAsync(null, cancellationToken);
         }
     }

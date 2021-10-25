@@ -168,7 +168,7 @@
           "$designer": {
             "id": "mw5OQZ"
           },
-          "condition": "= isMatch(stringOrValue('${turn.activity.text}'), '(?i)^\\\\\\\\000000 accept (?<conversation>.*) (?<user>.*)$')",
+          "condition": "= isMatch(stringOrValue('${turn.activity.text}'), '(?i)^Request Accepted From User With Dynamic Id(?<conversation>.*) (?<user>.*)$')",
           "actions": [
             {
               "$kind": "AcceptOrRejectDialog",
@@ -207,7 +207,7 @@
         }
       ],
       "priority": 0,
-      "condition": "#AcceptRequest.score >= 0.2"
+      "condition": "#AcceptRequest.score >= 0.4"
     },
     {
       "$kind": "Microsoft.OnIntent",
@@ -312,7 +312,7 @@
         }
       ],
       "priority": 0,
-      "condition": "#RejectRequest.score >= 0.2"
+      "condition": "#RejectRequest.score >= 0.4"
     },
     {
       "$kind": "Microsoft.OnIntent",
